@@ -81,7 +81,6 @@ class ExampleV1ApiE2ETest {
             String requestUrl = "/api/v1/examples/나나";
 
             // act
-            ParameterizedTypeReference<ApiResponse<ExampleV1Dto.ExampleResponse>> responseType = new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<ExampleV1Dto.ExampleResponse>> response =
                 testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(null), responseType);
 
