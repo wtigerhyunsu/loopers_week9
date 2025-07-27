@@ -5,20 +5,22 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
@@ -45,6 +47,14 @@ public class ApiControllerAdvice {
         String message = String.format("필수 요청 파라미터 '%s' (타입: %s)가 누락되었습니다.", name, type);
         return failureResponse(ErrorType.BAD_REQUEST, message);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiResponse<?>> handleBadRequest(MissingRequestHeaderException e) {
+        String name = e.getHeaderName();
+        String message = String.format("'%s'헤더가 누락되었습니다.", name);
+        return failureResponse(ErrorType.BAD_REQUEST, message);
+    }
+
 
     @ExceptionHandler
     public ResponseEntity<ApiResponse<?>> handleBadRequest(HttpMessageNotReadableException e) {
@@ -118,6 +128,21 @@ public class ApiControllerAdvice {
         Matcher matcher = pattern.matcher(message);
         return matcher.find() ? matcher.group(1) : "";
     }
+
+  /**
+   * DTO 검증(@NotNull, @Size 등) 실패 시 이 메서드가 호출됩니다.
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ApiResponse<?>> handleValidation(MethodArgumentNotValidException e) {
+    // 첫 번째 FieldError만 취합
+    FieldError error = e.getBindingResult().getFieldErrors().get(0);
+    String field = error.getField();
+    String defaultMessage = error.getDefaultMessage();
+
+    String message = String.format("필드 '%s' : %s", field, defaultMessage);
+    log.warn("Validation failed: {}", message);
+    return failureResponse(ErrorType.BAD_REQUEST, message);
+  }
 
     private ResponseEntity<ApiResponse<?>> failureResponse(ErrorType errorType, String errorMessage) {
         return ResponseEntity.status(errorType.getStatus())
