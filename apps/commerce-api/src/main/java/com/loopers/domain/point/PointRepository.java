@@ -1,8 +1,10 @@
 package com.loopers.domain.point;
 
+import java.util.Optional;
+
 public interface PointRepository {
 
-  PointModel get(String userId);
+  Optional<PointModel> get(String userId);
 
-  PointModel charge(String userId, int point);
+  PointModel save(PointModel point);
 }

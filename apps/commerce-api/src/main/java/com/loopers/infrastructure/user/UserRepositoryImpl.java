@@ -28,7 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
   }
 
   @Override
-  public Optional<UserModel> findByUserId(String userId) {
+  public Optional<UserModel> get(String userId) {
     return repository.findByUserId(new UserId(userId));
 
   }

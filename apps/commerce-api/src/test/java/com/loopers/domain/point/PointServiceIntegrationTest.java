@@ -3,12 +3,15 @@ package com.loopers.domain.point;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
+import com.loopers.application.point.PointFacade;
+import com.loopers.application.point.PointInfo;
 import com.loopers.domain.user.UserModel;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
+import java.math.BigInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,7 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 @SpringBootTest
 public class PointServiceIntegrationTest {
   @MockitoSpyBean
-  private PointService pointService;
+  private PointFacade pointFacade;
   @MockitoSpyBean
   private UserJpaRepository userJpaRepository;
   @MockitoSpyBean
@@ -46,13 +49,13 @@ public class PointServiceIntegrationTest {
     void returnSavingPointWhenExitsUserId() {
       //arrange
       String userId = "test";
-      int point = 5000;
+      BigInteger point = BigInteger.valueOf(5000);
       userJpaRepository.save(new UserModel(userId, "test@test.com", "2020-01-01", "M"));
       pointJpaRepository.save(new PointModel(userId, point));
       // act
-      PointModel pointModel = pointService.get(userId);
+      PointInfo pointInfo = pointFacade.get(userId);
       // assert
-      assertThat(pointModel.getPoint()).isEqualTo(point);
+      assertThat(pointInfo.point()).isEqualTo(point);
     }
 
     @DisplayName("해당 ID 의 회원이 존재하지 않을 경우, null 이 반환된다.")
@@ -60,12 +63,12 @@ public class PointServiceIntegrationTest {
     void returnNullWhenNotExitsUserId() {
       //arrange
       String userId = "test";
-      int point = 5000;
+      BigInteger point = BigInteger.valueOf(5000);
       pointJpaRepository.save(new PointModel(userId, point));
       // act
-      PointModel pointModel = pointService.get(userId);
+      PointInfo pointInfo = pointFacade.get(userId);
       // assert
-      assertThat(pointModel).isNull();
+      assertThat(pointInfo).isNull();
     }
 
   }
@@ -80,9 +83,9 @@ public class PointServiceIntegrationTest {
     void returnNotFoundException_whenChargingWithNonExistentUserId() {
       //arrange
       String userId = "notExist";
-      int point = 5000;
+      BigInteger point = BigInteger.valueOf(5000);
       // act
-      CoreException result = assertThrows(CoreException.class, () -> pointService.charge(userId, point));
+      CoreException result = assertThrows(CoreException.class, () -> pointFacade.charge(userId, point));
       // assert
       assertThat(result.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
     }

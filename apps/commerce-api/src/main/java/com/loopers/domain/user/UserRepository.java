@@ -7,5 +7,5 @@ public interface UserRepository {
   UserModel save(UserModel userModel);
 
   void duplicateUserId(String userId);
-  Optional<UserModel> findByUserId(String userId);
+  Optional<UserModel> get(String userId);
 }

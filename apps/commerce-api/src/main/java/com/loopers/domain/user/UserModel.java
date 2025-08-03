@@ -8,9 +8,10 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import lombok.Builder;
 
 @Entity
-@Table(name = "user")
+@Table(name = "member")
 public class UserModel extends BaseEntity {
 
   @Embedded
@@ -27,6 +28,7 @@ public class UserModel extends BaseEntity {
   public UserModel() {
   }
 
+  @Builder(builderMethodName = "create")
   public UserModel(String userId, String email, String birthday, String gender) {
     this.userId = new UserId(userId);
     this.email = new Email(email);

@@ -5,7 +5,7 @@ erDiagram
 %%브랜드    
 BRAND {
  BIGINT id PK "브랜드 아이디"
- BIGINT member_id FK "계정 아이디"
+ VARCHAR(20) member_id FK "계정 아이디"
  VARCHAR(50) name UK "브랜드 명"
 
  TIMESTAMP created_at "생성 시간"
@@ -44,12 +44,22 @@ PRODUCT_LIKE {
  
  TIMESTAMP created_at "생성 시간"
  TIMESTAMP updated_at "수정 시간"
+ TIMESTAMP deleted_at "삭제 시간"
+}
+
+%%좋아요된 상품
+PRODUCT_STAUS { 
+ BIGINT id PK "상품 상태 ID"
+ BIGINT prduct_id FK "상품 ID"
+ int like_count "좋아요 count"
+ TIMESTAMP created_at "생성 시간"
+ TIMESTAMP updated_at "수정 시간"
+ TIMESTAMP deleted_at "삭제 시간"
 }
 
 %% 계정
 MEMBER {
- BIGINT id PK "계정아이디"
- VARCHAR(20) user_id UK "로그인 아이디"
+ VARCHAR(20) id PK "계정 아이디"
  VARCHAR(200) email "이메일"
  VARCHAR(20) phone "전화번호"
  TimeStamp birth_day "탄생일"
@@ -61,7 +71,7 @@ MEMBER {
 %% 포인트
 POINT {
  BIGINT id PK "포인트아이디"
- BIGINT member_id FK "계정아이디"
+ VARCHAR(20) member_id FK "계정아이디"
  BIGINT amount "포인트"
 
  TIMESTAMP created_at "생성 시간"
@@ -74,7 +84,7 @@ POINT {
 ORDER {
  BIGINT id PK "주문 아이디"
  VARCHAR(25) order_number UK "주문 번호"
- BIGINT member_id FK "계정아이디" 
+ VARCHAR(20) member_id FK "계정아이디" 
  VARCHAR(10) status "주문상태 : 주문 / 주문 취소 / 결제"
  
  BIGINT total_price "주문 가격"    
@@ -106,7 +116,7 @@ ORDER_HISTORY {
  BIGINT id PK "히스토리 아이디"
  BIGINT order_id FK "주문 아이디"
  VARCHAR(25) order_number "주문 번호"
- BIGINT member_id FK "계정아이디"
+ VARCHAR(20) member_id FK "계정아이디"
  VARCHAR(10) status "주문상태 : 주문 / 주문 취소 / 결제"
  
  BIGINT total_price "주문 가격"
@@ -122,9 +132,10 @@ ORDER_HISTORY {
 PAYMENT {
  BIGINT id PK "결제 아이디"
  VARCHAR(25) order_number "주문 번호"
- BIGINT member_id FK "계정아이디"
+ VARCHAR(20) member_id FK "계정아이디"
  TEXT description "설명"
  BIGINT payment_amount "결제 금액"
+ BIGINT order_amount "결제 금액"
  TimeStamp created_at "생성 시간"
  TimeStamp updated_at "수정 시간"
  TimeStamp deleted_at "삭제 시간"    
@@ -132,9 +143,11 @@ PAYMENT {
 
 BRAND ||--o{PRODUCT : has
 PRODUCT || -- || STOCK : has
+PRODUCT  || -- || PRODUCT_STAUS : has
 
 PRODUCT || -- o{PRODUCT_LIKE  : reference
 MEMBER || -- o{PRODUCT_LIKE : reference
+
 
 MEMBER || -- o{ POINT : has
 

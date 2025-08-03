@@ -11,6 +11,7 @@ import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.utils.DatabaseCleanUp;
+import java.math.BigInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -65,7 +66,7 @@ public class PointV1ApiE2ETest {
     void returnSavingPoint_whenConfirmPoint() {
       //arrange
       String userId = "test";
-      int point = 5000;
+      BigInteger point = BigInteger.valueOf(5000);
       userJpaRepository.save(new UserModel(userId, "test@test.com", "2020-01-01", "M"));
       pointJpaRepository.save(new PointModel(userId, point));
 
@@ -116,16 +117,17 @@ public class PointV1ApiE2ETest {
     @DisplayName("존재하는 유저가 1000원을 충전할 경우, 충전된 보유 총량을 응답으로 반환한다.")
     @ParameterizedTest
     @ValueSource(ints = {0, 1})
-    void returnSavingTotalPoint_whenCharging1000Point(int point) {
+    void returnSavingTotalPoint_whenCharging1000Point(int intPoint) {
       //arrange
       String userId = "test";
+      BigInteger point = BigInteger.valueOf(intPoint);
       HttpHeaders headers = new HttpHeaders();
       headers.add("X-USER-ID", userId);
 
       userJpaRepository.save(new UserModel(userId, "test@test.com", "2020-01-01", "M"));
       pointJpaRepository.save(new PointModel(userId, point));
 
-      PointV1Dto.ChargeRequest request = new PointV1Dto.ChargeRequest(1000);
+      PointV1Dto.ChargeRequest request = new PointV1Dto.ChargeRequest(BigInteger.valueOf(1000));
 
       //act
       ParameterizedTypeReference<ApiResponse<PointV1Dto.ChargeResponse>> responseType = new ParameterizedTypeReference<>() {
@@ -135,7 +137,7 @@ public class PointV1ApiE2ETest {
 
       //assert
       assertAll(() -> assertThat(response.getStatusCode().is2xxSuccessful()).isTrue(),
-          () -> assertThat(response.getBody().data().point()).isEqualTo(point + 1000));
+          () -> assertThat(response.getBody().data().point()).isEqualTo(point.add(BigInteger.valueOf(1000))));
     }
 
     @DisplayName("존재하지 않는 유저로 요청할 경우, 404 Not Found 응답을 반환한다.")
@@ -146,7 +148,7 @@ public class PointV1ApiE2ETest {
       HttpHeaders headers = new HttpHeaders();
       headers.add("X-USER-ID", userId);
 
-      PointV1Dto.ChargeRequest request = new PointV1Dto.ChargeRequest(100);
+      PointV1Dto.ChargeRequest request = new PointV1Dto.ChargeRequest(BigInteger.valueOf(100));
 
       //act
       ParameterizedTypeReference<ApiResponse<PointV1Dto.PointResponse>> responseType = new ParameterizedTypeReference<>() {

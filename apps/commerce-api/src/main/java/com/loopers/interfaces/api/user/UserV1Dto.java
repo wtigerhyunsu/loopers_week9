@@ -1,5 +1,6 @@
 package com.loopers.interfaces.api.user;
 
+import com.loopers.application.user.UserCommand;
 import com.loopers.application.user.UserInfo;
 import jakarta.validation.constraints.NotNull;
 
@@ -8,12 +9,12 @@ public class UserV1Dto {
   class Resister {
     public record UserRequest(String userId, String email, String birthday, @NotNull Gender gender) {
 
-      public UserInfo toUserInfo() {
-        return new UserInfo(
+      public UserCommand toUserInfo() {
+        return new UserCommand(
             userId,
             email,
             birthday,
-            gender.toString()
+            gender.name()
         );
       }
     }
