@@ -15,4 +15,6 @@ public interface ProductRepository {
 
   Optional<ProductStatus> has(Long productId);
 
+  Optional<ProductStatus> hasWithLock(Long productId);
+
 }

@@ -31,27 +31,24 @@ public class PointModelTest {
       assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
     }
 
-    @DisplayName("0 미만의 정수로 포인트를 사용하는 경우, `400 BadRequest`를 반환한다.")
+    @DisplayName("0 미만의 정수로 포인트를 사용하는 경우, `IllegalArgumentException`를 반환한다.")
     @Test
     void throwsBadRequest_whenUsingZeroLessPoints() {
       // given
       BigInteger point = BigInteger.valueOf(-1);
-      // when
-      CoreException result = assertThrows(CoreException.class, () -> new Point().use(point));
-      // then
-      assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+      // when&then
+      Exception result = assertThrows(IllegalArgumentException.class, () -> new Point().use(point));
     }
 
 
-    @DisplayName("포인트 저장시 포인트가 음수라면, `400 BadRequest`를 반환한다.")
+    @DisplayName("포인트 저장시 포인트가 음수라면, `IllegalArgumentException`를 반환한다.")
     @Test
     void throwsBadRequest_whenSavingZeroLessPoints() {
       // given
       BigInteger point = BigInteger.valueOf(-1);
-      // when
-      CoreException result = assertThrows(CoreException.class, () -> new Point(point));
-      // then
-      assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+      // when&then
+      Exception result = assertThrows(IllegalArgumentException.class, () -> new Point(point));
+
     }
 
     @DisplayName("포인트 저장시 계정 아이디가 존재한다면, 포인트는 0으로 리턴되어집니다.")

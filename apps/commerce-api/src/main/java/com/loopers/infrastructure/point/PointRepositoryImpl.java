@@ -13,9 +13,15 @@ public class PointRepositoryImpl implements PointRepository {
 
 
   @Override
+  public Optional<PointModel> getWithLock(String userId) {
+    return pointRepository.findByUserIdWithLock(userId);
+  }
+
+  @Override
   public Optional<PointModel> get(String userId) {
     return pointRepository.findByUserId(userId);
   }
+
 
   @Override
   public PointModel save(PointModel point) {

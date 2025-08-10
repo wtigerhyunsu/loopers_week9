@@ -13,6 +13,7 @@ import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -134,6 +135,15 @@ public class ProductRepositoryImpl implements ProductRepository {
     return Optional.ofNullable(query.select(status)
         .from(status)
         .where(status.productId.eq(productId))
+        .fetchOne());
+  }
+
+  @Override
+  public Optional<ProductStatus> hasWithLock(Long productId) {
+    return Optional.ofNullable(query.select(status)
+        .from(status)
+        .where(status.productId.eq(productId))
+        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
         .fetchOne());
   }
 

@@ -4,6 +4,7 @@ import com.loopers.domain.BaseEntity;
 import com.loopers.domain.catalog.product.embeded.ProductName;
 import com.loopers.domain.catalog.product.embeded.ProductPrice;
 import com.loopers.domain.catalog.product.status.ProductStatus;
+import com.loopers.domain.catalog.product.stock.StockModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -29,6 +30,9 @@ public class ProductModel extends BaseEntity {
 
   @OneToOne
   private ProductStatus status;
+
+  @OneToOne
+  private StockModel stock;
 
   public ProductModel(Long brandId, String name, BigInteger price, String description) {
     this.brandId = brandId;

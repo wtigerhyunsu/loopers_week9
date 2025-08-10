@@ -1,7 +1,5 @@
 package com.loopers.domain.user.embeded;
 
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Embeddable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +16,7 @@ public class BirthDay {
 
   public BirthDay(String birthday) {
     if (!isValidBirth(birthday)) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "생년월일 형식은 yyyy-MM-dd 이어야 하며, 유효한 날짜여야 합니다.");
+      throw new IllegalArgumentException("생년월일 형식은 yyyy-MM-dd 이어야 하며, 유효한 날짜여야 합니다.");
     }
     this.birthday = LocalDate.parse(birthday, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
   }

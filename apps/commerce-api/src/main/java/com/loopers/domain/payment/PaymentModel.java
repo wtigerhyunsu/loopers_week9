@@ -1,12 +1,11 @@
 package com.loopers.domain.payment;
 
 import com.loopers.domain.BaseEntity;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.math.BigInteger;
+import java.util.NoSuchElementException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,11 +36,11 @@ public class PaymentModel extends BaseEntity {
   public PaymentModel(String orderNumber, String userId, BigInteger paymentAmount,
                       BigInteger orderAmount,String description) {
     if(orderNumber == null) {
-      throw new CoreException(ErrorType.NOT_FOUND,"결제 정보에는 주문 번호가 존재해야합니다.");
+      throw new NoSuchElementException("결제 정보에는 주문 번호가 존재해야합니다.");
     }
 
     if(userId == null) {
-      throw new CoreException(ErrorType.NOT_FOUND,"결제 정보에는 결제가 존재해야합니다.");
+      throw new NoSuchElementException("결제 정보에는 결제가 존재해야합니다.");
     }
 
     this.orderNumber = orderNumber;

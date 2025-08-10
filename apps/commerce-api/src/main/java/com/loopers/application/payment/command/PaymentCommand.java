@@ -1,4 +1,4 @@
-package com.loopers.application.payment;
+package com.loopers.application.payment.command;
 
 import java.math.BigInteger;
 

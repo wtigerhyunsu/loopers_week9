@@ -17,13 +17,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @SpringBootTest
 public class UserServiceIntegrationTest {
-  @MockitoSpyBean
+  @Autowired
   private UserFacade userFacade;
-  @MockitoSpyBean
+  @Autowired
   private UserJpaRepository userJpaRepository;
 
   @Autowired

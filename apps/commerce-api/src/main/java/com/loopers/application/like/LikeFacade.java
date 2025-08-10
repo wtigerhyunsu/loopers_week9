@@ -19,7 +19,7 @@ public class LikeFacade {
 
   @Transactional
   public void like(String userId, Long productId) {
-    ProductStatus productStatus = productRepository.has(productId).orElseThrow(
+    ProductStatus productStatus = productRepository.hasWithLock(productId).orElseThrow(
         () -> new CoreException(ErrorType.NOT_FOUND, "해당하는 상품이 존재하지 않습니다.")
     );
     Optional<LikeModel> likeModel = likeRepository.liked(userId, productId);
@@ -36,7 +36,7 @@ public class LikeFacade {
 
   @Transactional
   public void unlike(String userId, Long productId) {
-    ProductStatus productStatus = productRepository.has(productId).orElseThrow(
+    ProductStatus productStatus = productRepository.hasWithLock(productId).orElseThrow(
         () -> new CoreException(ErrorType.NOT_FOUND, "해당하는 상품이 존재하지 않습니다.")
     );
 

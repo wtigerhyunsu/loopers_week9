@@ -150,9 +150,9 @@ class OrderModelTest {
     }
 
     // 존재하지 않는 상품을 제거 하는 경우
-    @DisplayName("존재하지 않는 상품을 제거하는 경우, `400 Bad Request`를 반환한다.")
+    @DisplayName("존재하지 않는 상품을 제거하는 경우, `IllegalArgumentException`를 반환한다.")
     @Test
-    void throw400BadRequest_whenDeletedNotExitsProduct() {
+    void throwIllegalArgumentException_whenDeletedNotExitsProduct() {
       //given
       OrderItemModel orderItem = OrderItemModel.builder()
           .orderId(1L)
@@ -164,16 +164,14 @@ class OrderModelTest {
       OrderItems orderItems = new OrderItems();
 
       orderItems.add(orderItem);
-      //when
-      CoreException result = assertThrows(CoreException.class, () -> orderItems.remove(2L));
-      //then
-      assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+      //when&then
+      Exception result = assertThrows(IllegalArgumentException.class, () -> orderItems.remove(2L));
     }
 
     // 존재하지 않는 상품을 여러개 제거하는 경우
-    @DisplayName("존재하지 않는 상품 여러개를 제거하는 경우, `400 Bad Request`를 반환한다.")
+    @DisplayName("존재하지 않는 상품 여러개를 제거하는 경우, `IllegalArgumentException`를 반환한다.")
     @Test
-    void throw400BadRequest_whenDeletedNotExitsMultiProduct() {
+    void throwIllegalArgumentException_whenDeletedNotExitsMultiProduct() {
       //given
       OrderItemModel orderItem = OrderItemModel.builder()
           .orderId(1L)
@@ -185,10 +183,8 @@ class OrderModelTest {
       OrderItems orderItems = new OrderItems();
 
       orderItems.add(orderItem);
-      //when
-      CoreException result = assertThrows(CoreException.class, () -> orderItems.removeAll(List.of(2L, 3L)));
-      //then
-      assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+      //when&then
+      Exception result = assertThrows(IllegalArgumentException.class, () -> orderItems.removeAll(List.of(2L, 3L)));
     }
 
     // 이미 등록된 상품을 등록하는 경우
@@ -408,19 +404,17 @@ class OrderModelTest {
     }
   }
 
-  @DisplayName("주문상태가 주문이 아닌 경우, `400 BadRequest`를 반환합니다.")
+  @DisplayName("주문상태가 주문이 아닌 경우, `IllegalArgumentException`를 반환합니다.")
   @ParameterizedTest
   @ValueSource(strings = {"CANCEL", "DONE"})
-  void throw400BadRequest_whenOderStateIsNotOrder(String state) {
+  void throwIllegalArgumentException_whenOderStateIsNotOrder(String state) {
     // given
     OrderModel orderModel = OrderModel.create().userId("userId")
         .address("주소")
         .memo("메모").build();
     orderModel.forceChange(state);
-    //when
-    CoreException result = assertThrows(CoreException.class, orderModel::cancel);
-    //then
-    assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+    //when&then
+    Exception result = assertThrows(IllegalArgumentException.class, orderModel::cancel);
   }
 
   // 주문을 취소하는 경우

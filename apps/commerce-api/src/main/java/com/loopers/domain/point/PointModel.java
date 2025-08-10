@@ -2,13 +2,14 @@ package com.loopers.domain.point;
 
 import com.loopers.domain.BaseEntity;
 import com.loopers.domain.point.embeded.Point;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.NoSuchElementException;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 public class PointModel extends BaseEntity {
 
   private String userId;
@@ -38,7 +40,7 @@ public class PointModel extends BaseEntity {
 
   private void validate(String userId) {
     if (userId == null) {
-      throw new CoreException(ErrorType.NOT_FOUND, "포인트 저장시 계정아이디는 필수입니다.");
+      throw new NoSuchElementException("포인트 저장시 계정아이디는 필수입니다.");
     }
   }
 

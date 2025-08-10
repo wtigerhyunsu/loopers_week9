@@ -26,7 +26,7 @@ public class Point {
   // 사용
   public Point use(BigInteger point) {
     if (point.compareTo(BigInteger.ZERO) < 0) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "0미만으로 포인트를 사용할 수 없습니다.");
+      throw new IllegalArgumentException("0미만으로 포인트를 사용할 수 없습니다.");
     }
     return new Point(this.point.subtract(point));
   }
@@ -34,7 +34,7 @@ public class Point {
 
   public Point(BigInteger point) {
     if (point.compareTo(BigInteger.ZERO) < 0) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "포인트는 0미만일 수 없습니다.");
+      throw new IllegalArgumentException("포인트는 0미만일 수 없습니다.");
     }
 
     this.point = point;

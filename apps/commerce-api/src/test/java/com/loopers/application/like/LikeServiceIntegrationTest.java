@@ -6,8 +6,12 @@ import com.loopers.domain.catalog.product.ProductRepository;
 import com.loopers.domain.catalog.product.status.ProductStatus;
 import com.loopers.domain.like.LikeRepository;
 import com.loopers.utils.DatabaseCleanUp;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -79,4 +83,61 @@ class LikeServiceIntegrationTest {
     assertThat(productStatus.getLikeCount()).isEqualTo(0);
   }
 
+  @DisplayName("동시성 테스트")
+  @Nested
+  class Concurrency {
+
+    @DisplayName("200명이 동시에 좋아요를 누르는경우, 상품 좋아요 갯수는 200개를 리턴한다.")
+    @Test
+    void concurrencyTest_LikeShouldBeProperlyIncreasedWhenLiked() throws InterruptedException {
+      int threadCount = 200;
+      ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+      CountDownLatch latch = new CountDownLatch(threadCount);
+
+      for (int i = 0; i < threadCount; i++) {
+        String userId = "userId" + i;
+        executor.submit(() -> {
+          try {
+            likeFacade.like(userId, 1L);
+          } catch (Exception e) {
+            System.out.println("실패: " + e.getMessage());
+          } finally {
+            latch.countDown();
+          }
+        });
+      }
+
+      latch.await();
+
+      ProductStatus productStatus = productRepository.has(1L).get();
+      assertThat(productStatus.getLikeCount()).isEqualTo(threadCount);
+    }
+
+    @DisplayName("200명이 동시에 좋아요 or 해제를 누르는경우, 상품 좋아요 갯수는 0개를 리턴한다.")
+    @Test
+    void concurrencyTest_LikeShouldBeProperlyIncreasedWhenLikedOrDisLiked() throws InterruptedException {
+      int threadCount = 200;
+      ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+      CountDownLatch latch = new CountDownLatch(threadCount);
+
+      for (int i = 0; i < threadCount; i++) {
+        String userId = "userId" + i;
+        executor.submit(() -> {
+          try {
+            likeFacade.like(userId, 1L);
+            likeFacade.unlike(userId, 1L);
+          } catch (Exception e) {
+            System.out.println("실패: " + e.getMessage());
+          } finally {
+            latch.countDown();
+          }
+        });
+      }
+
+      latch.await();
+
+      ProductStatus productStatus = productRepository.has(1L).get();
+      assertThat(productStatus.getLikeCount()).isEqualTo(0);
+    }
+  }
 }

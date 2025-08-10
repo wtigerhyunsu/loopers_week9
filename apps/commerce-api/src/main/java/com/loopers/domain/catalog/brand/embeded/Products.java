@@ -2,16 +2,12 @@ package com.loopers.domain.catalog.brand.embeded;
 
 
 import com.loopers.domain.catalog.product.ProductModel;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-@Embeddable
 @Getter
 public class Products {
-  @OneToMany(mappedBy = "brandId")
   private List<ProductModel> products;
 
   protected Products() {

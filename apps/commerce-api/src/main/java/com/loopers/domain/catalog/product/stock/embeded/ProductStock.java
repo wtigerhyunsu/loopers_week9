@@ -1,7 +1,5 @@
 package com.loopers.domain.catalog.product.stock.embeded;
 
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Embeddable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,14 +24,14 @@ public class ProductStock {
 
   public ProductStock decrease(long stock) {
     if(stock < 0) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "음수로 재고 차감은 불가합니다.");
+      throw new IllegalArgumentException("음수로 재고 차감은 불가합니다.");
     }
     return new ProductStock(this.stock - stock);
   }
 
   void validate(long stock) {
     if(stock < 0) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "재고는 0미만일 수 없습니다.");
+      throw new IllegalArgumentException("음수로 재고 차감은 불가합니다.");
     }
   }
 

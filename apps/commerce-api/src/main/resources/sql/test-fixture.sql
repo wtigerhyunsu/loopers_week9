@@ -82,7 +82,7 @@ INSERT INTO stock (id, product_id, stock, created_at, updated_at, deleted_at) VA
 INSERT INTO stock (id, product_id, stock, created_at, updated_at, deleted_at) VALUES (5, 5, 200, '2025-07-15 10:00:00', '2025-07-15 10:00:00', NULL);
 INSERT INTO stock (id, product_id, stock, created_at, updated_at, deleted_at) VALUES (6, 6, 120, '2025-07-15 10:00:00', '2025-07-15 10:00:00', NULL);
 
-INSERT INTO stock (id, product_id, stock, created_at, updated_at, deleted_at) VALUES (7, 7, 60, '2025-07-15 10:00:00', '2025-07-15 10:00:00', NULL);
+INSERT INTO stock (id, product_id, stock, created_at, updated_at, deleted_at) VALUES (7, 7, 1000, '2025-07-15 10:00:00', '2025-07-15 10:00:00', NULL);
 INSERT INTO stock (id, product_id, stock, created_at, updated_at, deleted_at) VALUES (8, 8, 80, '2025-07-15 10:00:00', '2025-07-15 10:00:00', NULL);
 INSERT INTO stock (id, product_id, stock, created_at, updated_at, deleted_at) VALUES (9, 9, 45, '2025-07-15 10:00:00', '2025-07-15 10:00:00', NULL);
 INSERT INTO stock (id, product_id, stock, created_at, updated_at, deleted_at) VALUES (10, 10, 35, '2025-07-15 10:00:00', '2025-07-15 10:00:00', NULL);

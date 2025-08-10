@@ -1,4 +1,4 @@
-package com.loopers.application.order;
+package com.loopers.application.order.command;
 
 import java.util.List;
 

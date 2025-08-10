@@ -4,9 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import java.math.BigInteger;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,85 +14,77 @@ import org.junit.jupiter.params.provider.ValueSource;
 @DisplayName("주문 아이템 생성시, ")
 class OrderItemModelTest {
 
-  @DisplayName("주문아이디는 존재하지 않는 경우, 404 Not Found를 반환합니다.")
+  @DisplayName("주문아이디는 존재하지 않는 경우, `NoSuchElementException`를 반환합니다.")
   @Test
-  void throw404NotFound_whenExitsOrderId() {
+  void throwNoSuchElementException_whenExitsOrderId() {
     //given
     Long orderId = null;
     Long productId = 1L;
     Long quantity = 1L;
     BigInteger price = BigInteger.valueOf(2000);
 
-    //when
-    CoreException result = assertThrows(CoreException.class, () -> OrderItemModel.builder()
+    //when&then
+    Exception result = assertThrows(NoSuchElementException.class, () -> OrderItemModel.builder()
         .orderId(orderId)
         .productId(productId)
         .quantity(quantity)
         .unitPrice(price)
         .build());
-    //then
-    assertThat(result.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
   }
 
-  @DisplayName("상품아이디는 존재하지 않는 경우, 404 Not Found를 반환합니다.")
+  @DisplayName("상품아이디는 존재하지 않는 경우, `NoSuchElementException`를 반환합니다.")
   @Test
-  void throw404NotFound_whenExitsProductId() {
+  void throwNoSuchElementException_whenExitsProductId() {
     //given
     Long orderId = 1L;
     Long productId = null;
     Long quantity = 1L;
     BigInteger price = BigInteger.valueOf(2000);
 
-    //when
-    CoreException result = assertThrows(CoreException.class, () -> OrderItemModel.builder()
+    //when&then
+    Exception result = assertThrows(NoSuchElementException.class, () -> OrderItemModel.builder()
         .orderId(orderId)
         .productId(productId)
         .quantity(quantity)
         .unitPrice(price)
         .build());
-    //then
-    assertThat(result.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
   }
 
-  @DisplayName("수량이 존재하지 않는 경우, 400 BadRequest를 반환합니다.")
+  @DisplayName("수량이 존재하지 않는 경우, `IllegalArgumentException`를 반환합니다.")
   @Test
-  void throw400BadRequest_whenExitsQuantity() {
+  void throwIllegalArgumentException_whenExitsQuantity() {
     //given
     Long orderId = 1L;
     Long productId = 1L;
     Long quantity = null;
     BigInteger price = BigInteger.valueOf(2000);
 
-    //when
-    CoreException result = assertThrows(CoreException.class, () -> OrderItemModel.builder()
+    //when&then
+    Exception result = assertThrows(IllegalArgumentException.class, () -> OrderItemModel.builder()
         .orderId(orderId)
         .productId(productId)
         .quantity(quantity)
         .unitPrice(price)
         .build());
-    //then
-    assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
   }
 
 
-  @DisplayName("수량이 0이하인 경우, 400 BadRequest를 반환합니다.")
+  @DisplayName("수량이 0이하인 경우, `IllegalArgumentException`를 반환합니다.")
   @ParameterizedTest
   @ValueSource(longs = {-1, 0})
-  void throw400BadRequest_whenExitsQuantityUnderZero(long quantity) {
+  void throwIllegalArgumentException_whenExitsQuantityUnderZero(long quantity) {
     //given
     Long orderId = 1L;
     Long productId = 1L;
     BigInteger price = BigInteger.valueOf(2000);
 
-    //when
-    CoreException result = assertThrows(CoreException.class, () -> OrderItemModel.builder()
+    //when&then
+    Exception result = assertThrows(IllegalArgumentException.class, () -> OrderItemModel.builder()
         .orderId(orderId)
         .productId(productId)
         .quantity(quantity)
         .unitPrice(price)
         .build());
-    //then
-    assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
   }
 
   @DisplayName("가격이 존재하지 않는 경우, 0원을 리턴합니다.")

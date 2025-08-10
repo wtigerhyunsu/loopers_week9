@@ -90,7 +90,7 @@ public class OrderModel extends BaseEntity {
   public void cancel() {
 
     if (status != OrderStatus.ORDER) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "주문 상태가 아닌 주문은 취소할 수 없습니다.");
+      throw new IllegalArgumentException("주문 상태가 아닌 주문은 취소할 수 없습니다.");
     }
 
     this.status = OrderStatus.CANCEL;

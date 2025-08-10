@@ -1,7 +1,5 @@
 package com.loopers.domain.catalog.product.embeded;
 
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Embeddable;
 import java.math.BigInteger;
 import lombok.Getter;
@@ -25,7 +23,7 @@ public class ProductPrice {
 
   private static void validate(BigInteger price) {
     if (price.compareTo(BigInteger.ZERO) < 0) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "상품의 각겨은 음수로 책정할 수 없습니다.");
+      throw new IllegalArgumentException("상품의 각겨은 음수로 책정할 수 없습니다.");
     }
   }
 }

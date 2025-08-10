@@ -1,8 +1,6 @@
 package com.loopers.domain.order.embeded;
 
 import com.loopers.domain.order.orderItem.OrderItemModel;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
@@ -13,6 +11,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.Getter;
 
@@ -87,7 +86,7 @@ public class OrderItems {
     long count = this.orderItems.stream().filter(orderItem -> orderItem.getOrderId().equals(productId))
         .count();
     if (count == 0) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "존재하지 않는 상품은 제거할 수 없습니다.");
+      throw new IllegalArgumentException("존재하지 않는 상품은 제거할 수 없습니다.");
     }
 
     this.orderItems.removeIf(orderItemModel -> orderItemModel.getProductId().equals(productId));
@@ -98,7 +97,7 @@ public class OrderItems {
     List<Long> currentIdList = orderItems.stream().map(OrderItemModel::getProductId).toList();
     for (Long removeId : removeProductId) {
       if (!currentIdList.contains(removeId)) {
-        throw new CoreException(ErrorType.BAD_REQUEST, "존재하지 않는 상품은 제거할 수 없습니다.");
+        throw new IllegalArgumentException("존재하지 않는 상품은 제거할 수 없습니다.");
       }
 
     }
@@ -120,7 +119,7 @@ public class OrderItems {
   public long findQuantity(long productId) {
     OrderItemModel orderItemModel = orderItems.stream().filter(orderItem -> orderItem.getProductId().equals(productId))
         .findFirst().orElseThrow(
-            () -> new CoreException(ErrorType.NOT_FOUND, "해당하는 상품ID를 찾을 수 없습니다.")
+            () -> new NoSuchElementException("해당하는 상품ID를 찾을 수 없습니다.")
         );
 
     return orderItemModel.getQuantity();

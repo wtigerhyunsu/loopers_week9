@@ -1,10 +1,9 @@
 package com.loopers.domain.catalog.product.status;
 
 import com.loopers.domain.BaseEntity;
-import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.util.NoSuchElementException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,7 @@ public class ProductStatus extends BaseEntity {
 
   private ProductStatus(Long productId) {
     if (productId == null) {
-      throw new CoreException(ErrorType.NOT_FOUND, "상품ID가 존재하지 않는다면 좋아요를 증감할 수 없습니다");
+      throw new NoSuchElementException("상품ID가 존재하지 않는다면 좋아요를 증감할 수 없습니다");
     }
     this.productId = productId;
   }
@@ -46,7 +45,7 @@ public class ProductStatus extends BaseEntity {
     int likeCurrentCount = this.likeCount - 1;
 
     if (likeCurrentCount < 0) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "좋아요 count는 0미만이 될 수 없습니다.");
+      throw new IllegalArgumentException("좋아요 count는 0미만이 될 수 없습니다.");
     }
 
     this.likeCount = likeCurrentCount;
