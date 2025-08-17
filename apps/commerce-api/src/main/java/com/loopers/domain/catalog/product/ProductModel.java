@@ -28,12 +28,6 @@ public class ProductModel extends BaseEntity {
   @Column(columnDefinition = "TEXT")
   private String description;
 
-  @OneToOne
-  private ProductStatus status;
-
-  @OneToOne
-  private StockModel stock;
-
   public ProductModel(Long brandId, String name, BigInteger price, String description) {
     this.brandId = brandId;
     this.name = ProductName.of(name);

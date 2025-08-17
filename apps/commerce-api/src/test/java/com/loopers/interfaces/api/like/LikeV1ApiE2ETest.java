@@ -5,8 +5,19 @@ import static com.loopers.interfaces.api.ApiResponse.Metadata.Result.SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.loopers.domain.catalog.brand.BrandModel;
+import com.loopers.domain.catalog.product.ProductModel;
+import com.loopers.domain.catalog.product.status.ProductStatus;
+import com.loopers.domain.catalog.product.stock.StockModel;
+import com.loopers.domain.like.LikeModel;
+import com.loopers.infrastructure.catalog.brand.BrandJpaRepository;
+import com.loopers.infrastructure.catalog.product.ProductJpaRepository;
+import com.loopers.infrastructure.catalog.product.status.ProductStatusJpaRepository;
+import com.loopers.infrastructure.catalog.product.stock.StockJpaRepository;
+import com.loopers.infrastructure.like.LikeJpaRepository;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.utils.DatabaseCleanUp;
+import java.math.BigInteger;
 import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,15 +36,29 @@ import org.springframework.http.ResponseEntity;
 class LikeV1ApiE2ETest {
 
   Function<Long, String> ENDPOINT = id -> "/api/v1/like/products/" + id;
+
+  private final BrandJpaRepository brandJpaRepository;
+  private final ProductJpaRepository productJpaRepository;
+  private final ProductStatusJpaRepository productStatusJpaRepository;
+  private final LikeJpaRepository likeJpaRepository;
+  private final StockJpaRepository stockJpaRepository;
   private final TestRestTemplate testRestTemplate;
   private final DatabaseCleanUp databaseCleanUp;
 
   @Autowired
-  public LikeV1ApiE2ETest(TestRestTemplate testRestTemplate,
+  public LikeV1ApiE2ETest(BrandJpaRepository brandJpaRepository, ProductJpaRepository productJpaRepository,
+                          ProductStatusJpaRepository productStatusJpaRepository, LikeJpaRepository likeJpaRepository,
+                          StockJpaRepository stockJpaRepository, TestRestTemplate testRestTemplate,
                           DatabaseCleanUp databaseCleanUp) {
+    this.brandJpaRepository = brandJpaRepository;
+    this.productJpaRepository = productJpaRepository;
+    this.productStatusJpaRepository = productStatusJpaRepository;
+    this.likeJpaRepository = likeJpaRepository;
+    this.stockJpaRepository = stockJpaRepository;
     this.testRestTemplate = testRestTemplate;
     this.databaseCleanUp = databaseCleanUp;
   }
+
 
   @AfterEach
   void tearDown() {
@@ -95,7 +120,14 @@ class LikeV1ApiE2ETest {
     @Test
     void returnLikeStatusResponse_whenPushLike() {
       //given
-      Long id = 1L;
+
+      BrandModel brandModel = brandJpaRepository.save(new BrandModel("userId", "브랜드명1"));
+      ProductModel productModel = productJpaRepository.save(new ProductModel(brandModel.getId(), "상품1", BigInteger.valueOf(2000), "굳"));
+      productStatusJpaRepository.save(ProductStatus.of(productModel.getId(), 0));
+      stockJpaRepository.save(new StockModel(productModel.getId(), 100L));
+
+      Long id = productModel.getId();
+
       HttpHeaders headers = new HttpHeaders();
       headers.add("X-User-Id", "userId");
       //when
@@ -172,6 +204,11 @@ class LikeV1ApiE2ETest {
     @Test
     void returnUnlikeStatusResponse_whenPushLike() {
       //given
+      BrandModel brandModel = brandJpaRepository.save(new BrandModel("userId", "브랜드명1"));
+      ProductModel productModel = productJpaRepository.save(new ProductModel(brandModel.getId(), "상품1", BigInteger.valueOf(2000), "굳"));
+      productStatusJpaRepository.save(ProductStatus.of(productModel.getId(), 1));
+      stockJpaRepository.save(new StockModel(productModel.getId(), 100L));
+      likeJpaRepository.save(LikeModel.of("userId", productModel.getId()));
       Long id = 1L;
       HttpHeaders headers = new HttpHeaders();
       headers.add("X-User-Id", "userId");
@@ -229,7 +266,6 @@ class LikeV1ApiE2ETest {
       //when
       ParameterizedTypeReference<ApiResponse<LikeV1Dto.Get.Response>> responseType = new ParameterizedTypeReference<>() {
       };
-
 
       ResponseEntity<ApiResponse<LikeV1Dto.Get.Response>> response =
           testRestTemplate.exchange(ENDPOINT, HttpMethod.GET, new HttpEntity<>(null, headers), responseType);

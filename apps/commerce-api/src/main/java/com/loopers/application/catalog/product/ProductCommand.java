@@ -38,6 +38,3 @@ public record ProductCommand(
 
 }
 
-enum SortOption {
-  LATEST, PRICE_ASC, LIKES_DESC
-}

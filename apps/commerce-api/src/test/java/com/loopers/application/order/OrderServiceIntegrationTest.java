@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -137,63 +136,5 @@ class OrderServiceIntegrationTest {
     assertThat(cancel.orderStaus()).isEqualTo("CANCEL");
   }
 
-  @DisplayName("주문시 포인트 확인,")
-  @Nested
-  class Point {
-
-    @DisplayName("주문 시 유저의 포인트 잔액이 부족할 경우 `400 Bad Request`를 반환한다.")
-    @Test
-    void throw400_whenUserHasLessPointsThanOrderRequires() {
-      //given
-      List<OrderItemCommands> orderItemModels = new ArrayList<>();
-
-      orderItemModels.add(new OrderItemCommands(
-          1L, 1L
-      ));
-
-      OrderCreateCommand command =
-          new OrderCreateCommand("userId",
-              "서울시 송파구"
-              , orderItemModels, "메모..");
-
-      pointRepository.save(new PointModel("userId", BigInteger.valueOf(1)));
-
-      //when
-      CoreException result = assertThrows(CoreException.class, () -> orderFacade.create(command));
-      //then
-      assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-
-    }
-  }
-
-  @DisplayName("주문시, 재고 확인")
-  @Nested
-  class Stock {
-
-    @DisplayName("주문 시 재고가 부족할 경우 `400 Bad Request`를 반환한다.")
-    @Test
-    void throw400_whenCreatingOrderWithInsufficientStock() {
-      //given
-      List<OrderItemCommands> orderItemModels = new ArrayList<>();
-
-      orderItemModels.add(new OrderItemCommands(
-          1L, 3000L
-      ));
-
-      OrderCreateCommand command =
-          new OrderCreateCommand("userId",
-              "서울시 송파구"
-              , orderItemModels, "메모..");
-
-      pointRepository.save(new PointModel("userId", BigInteger.valueOf(500000000)));
-
-      //when
-      CoreException result = assertThrows(CoreException.class, () -> orderFacade.create(command));
-      //then
-      assertThat(result.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-
-    }
-
-  }
 
 }

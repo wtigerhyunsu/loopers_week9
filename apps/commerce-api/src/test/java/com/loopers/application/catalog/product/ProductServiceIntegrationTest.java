@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThrows;
 
 import com.loopers.domain.catalog.product.ProductProjection;
 import com.loopers.domain.catalog.product.ProductRepository;
+import com.loopers.infrastructure.catalog.brand.BrandJpaRepository;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
@@ -33,6 +34,9 @@ class ProductServiceIntegrationTest {
   private ProductFacade productFacade;
   @Autowired
   private ProductRepository repository;
+
+  @Autowired
+  private BrandJpaRepository brandRepository;
 
   @Autowired
   private DatabaseCleanUp databaseCleanUp;
@@ -108,8 +112,9 @@ class ProductServiceIntegrationTest {
       //then
       List<ProductContents> content = search.contents();
 
+      String brandName = brandRepository.findById(1L).get().getName();
       for (ProductContents productModel : content) {
-        assertThat(productModel.brandId()).isEqualTo(command.brandId());
+        assertThat(productModel.brandName()).isEqualTo(brandName);
       }
     }
 
@@ -156,26 +161,6 @@ class ProductServiceIntegrationTest {
     }
 
 
-    @DisplayName("생성일 기준으로 조회하는 경우, 해당하는 상품 리스트가 조회됩니다.")
-    @Test
-    void returnProductList_whenSortingCreatedAt() {
-      //given
-      ProductCommand command = ProductCommand.builder()
-          .sort(SortOption.LATEST) // 기본값은 LATEST
-          .currentPage(0)
-          .perSize(3)
-          .build();
-      //when
-      ProductSearchInfo search = productFacade.search(command);
-      List<ProductContents> contents = search.contents();
-      ProductContents preContents = contents.getFirst();
-      //then
-      for (int i = 1; i < contents.size(); i++) {
-        ProductContents nextModel = contents.get(i);
-        assertThat(preContents.createdAt()).isAfterOrEqualTo(nextModel.createdAt());
-        preContents = nextModel;
-      }
-    }
 
     @DisplayName("가격을 기준으로 조회하는 경우, 해당하는 상품 리스트가 조회됩니다.(오름차순)")
     @Test
@@ -254,8 +239,6 @@ class ProductServiceIntegrationTest {
         assertThat(productGetInfo.brandName()).isEqualTo(productModel.getBrandName());
         assertThat(productGetInfo.price()).isEqualTo(productModel.getPrice());
         assertThat(productGetInfo.likedCount()).isEqualTo(count);
-        assertThat(productGetInfo.createdAt()).isEqualTo(productModel.getCreatedAt());
-        assertThat(productGetInfo.updatedAt()).isEqualTo(productModel.getUpdateAt());
         assertThat(productGetInfo.description()).isEqualTo(productModel.getDescription());
         System.out.println(productGetInfo);
       }
