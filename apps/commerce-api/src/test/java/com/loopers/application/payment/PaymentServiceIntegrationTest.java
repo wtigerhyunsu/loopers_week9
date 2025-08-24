@@ -3,12 +3,12 @@ package com.loopers.application.payment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.loopers.application.order.ItemInfos;
+import com.loopers.application.order.OrderCreateCommand;
+import com.loopers.application.order.OrderCreateInfo;
 import com.loopers.application.order.OrderFacade;
-import com.loopers.application.order.command.OrderCreateCommand;
-import com.loopers.application.order.command.OrderItemCommands;
-import com.loopers.application.order.info.ItemInfos;
-import com.loopers.application.order.info.OrderCreateInfo;
-import com.loopers.application.payment.command.PaymentCommand;
+import com.loopers.application.order.OrderItemCommands;
+import com.loopers.application.payment.PaymentCommand.PaymentMethod;
 import com.loopers.application.point.PointFacade;
 import com.loopers.domain.catalog.product.stock.StockModel;
 import com.loopers.domain.catalog.product.stock.StockRepository;
@@ -83,8 +83,8 @@ class PaymentServiceIntegrationTest {
     userId = "userId";
     OrderCreateCommand command =
         new OrderCreateCommand(userId,
-            "서울시 송파구"
-            , orderItemModels, "메모..");
+            "서울시 송파구",
+            orderItemModels, "메모..");
 
     pointRepository.save(new PointModel(userId, BigInteger.valueOf(50000000)));
 
@@ -111,8 +111,9 @@ class PaymentServiceIntegrationTest {
     //given
     String orderNumber = orderCreateInfo.orderNumber();
     PointModel afterPoint = pointJpaRepository.findByUserId(userId).get();
-    BigInteger totalPrice = BigInteger.valueOf(100000);
-    PaymentCommand command = new PaymentCommand(userId, orderNumber, totalPrice, "shot");
+    BigInteger totalPrice = BigInteger.valueOf(500);
+    PaymentMethod paymentMethod = PaymentMethod.POINT;
+    PaymentCommand command = new PaymentCommand(userId, orderNumber, paymentMethod.name(), totalPrice, "shot");
     //when
     PaymentInfo payment = paymentFacade.payment(command);
     PointModel currentPoint = pointJpaRepository.findByUserId(userId).get();
@@ -128,7 +129,8 @@ class PaymentServiceIntegrationTest {
     //given
     StockModel afterStock = stockJpaRepository.findByProductId(1L).get();
     pointFacade.charge(userId, BigInteger.valueOf(500000));
-    PaymentCommand command = new PaymentCommand(userId, orderCreateInfo.orderNumber(), orderCreateInfo.totalPrice(), "shot");
+    String paymentMethod = "POINT";
+    PaymentCommand command = new PaymentCommand(userId, orderCreateInfo.orderNumber(), paymentMethod, orderCreateInfo.totalPrice(), "shot");
     //when
     //결제시
     paymentFacade.payment(command);
@@ -156,7 +158,7 @@ class PaymentServiceIntegrationTest {
               StockModel::getProductId,
               StockModel::stock
           ));
-
+      PaymentMethod paymentMethod = PaymentMethod.POINT;
       // 포인트 1로 변환
       pointJpaRepository.deleteByUserIdForTest(userId);
       PointModel model = pointRepository.save(new PointModel(userId, BigInteger.valueOf(1)));
@@ -164,6 +166,7 @@ class PaymentServiceIntegrationTest {
       PaymentCommand payment = new PaymentCommand(
           userId,
           orderNumber,
+          paymentMethod.name(),
           BigInteger.valueOf(30000),
           "설명"
       );
@@ -197,6 +200,7 @@ class PaymentServiceIntegrationTest {
     @Test
     void shouldRollbackPayment_whenStocksIsInsufficient() {
       //given
+      PaymentMethod paymentMethod = PaymentMethod.POINT;
       String orderNumber = orderCreateInfo.orderNumber();
       // 기존 포인트
       PointModel hasPoint = pointJpaRepository.findByUserId(userId).get();
@@ -207,6 +211,7 @@ class PaymentServiceIntegrationTest {
       PaymentCommand payment = new PaymentCommand(
           userId,
           orderNumber,
+          paymentMethod.name(),
           BigInteger.valueOf(30000),
           "설명"
       );

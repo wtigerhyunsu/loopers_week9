@@ -2,23 +2,28 @@ package com.loopers.application.like;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.loopers.domain.catalog.brand.BrandModel;
+import com.loopers.domain.catalog.product.ProductModel;
 import com.loopers.domain.catalog.product.ProductRepository;
 import com.loopers.domain.catalog.product.status.ProductStatus;
 import com.loopers.domain.like.LikeRepository;
+import com.loopers.infrastructure.catalog.brand.BrandJpaRepository;
+import com.loopers.infrastructure.catalog.product.ProductJpaRepository;
+import com.loopers.infrastructure.catalog.product.status.ProductStatusJpaRepository;
 import com.loopers.utils.DatabaseCleanUp;
+import java.math.BigInteger;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
-@Sql("/sql/test-fixture.sql")
 class LikeServiceIntegrationTest {
   @Autowired
   private LikeFacade likeFacade;
@@ -27,10 +32,28 @@ class LikeServiceIntegrationTest {
   private ProductRepository productRepository;
 
   @Autowired
+  private BrandJpaRepository brandJpaRepository;
+
+  @Autowired
+  private ProductJpaRepository productJpaRepository;
+
+  @Autowired
+  private ProductStatusJpaRepository productStatusJpaRepository;
+
+  @Autowired
   private LikeRepository likeRepository;
+
 
   @Autowired
   private DatabaseCleanUp databaseCleanUp;
+
+  @BeforeEach
+  void init() {
+    BrandModel brandModel = brandJpaRepository.save(new BrandModel("userId", "루퍼스"));
+    ProductModel productModel = productJpaRepository.save(new ProductModel(brandModel.getId(), "상품1", BigInteger.valueOf(2000), "ㅇㅇ"));
+    productStatusJpaRepository.save(ProductStatus.register(productModel.getId()));
+
+  }
 
   @AfterEach
   void tearDown() {

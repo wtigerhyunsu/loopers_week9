@@ -11,6 +11,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.properties["springDocOpenApiVersion"]}")
 
+    //resilience
+    implementation("io.github.resilience4j:resilience4j-spring-boot3")
+    implementation("io.github.resilience4j:resilience4j-circuitbreaker")
+    implementation("io.github.resilience4j:resilience4j-retry") // @Retry 사용을 위해 추가
+    implementation("io.github.resilience4j:resilience4j-micrometer")
+
+    implementation("io.micrometer:micrometer-registry-prometheus")
+
     // querydsl
     annotationProcessor("com.querydsl:querydsl-apt::jakarta")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
@@ -19,4 +27,7 @@ dependencies {
     // test-fixtures
     testImplementation(testFixtures(project(":modules:jpa")))
     testImplementation(testFixtures(project(":modules:redis")))
+
+    //feign
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 }

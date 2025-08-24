@@ -2,7 +2,7 @@ package com.loopers.application.payment.point;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.loopers.application.payment.handler.PointUseHandler;
+import com.loopers.application.payment.PointUseHandler;
 import com.loopers.domain.point.PointModel;
 import com.loopers.domain.point.PointRepository;
 import com.loopers.infrastructure.point.PointJpaRepository;

@@ -166,59 +166,66 @@ participant OF as OrderFacade
 participant OS as OrderService
 participant PAF as PaymentFacade
 participant PS as ProductService
+participant SS as StockService
 participant POS as PointService
+participant PG as pgSimulator
 
 C -->> OC: 주문 요청
 activate C
 activate OC
-OC -->> OF: 인증요청
+OC ->> OF: 인증요청
     activate OF
 alt 인증이 실패하는 경우
-OS -->> OC: 401 Unauthorized
+OS ->> OC: 401 Unauthorized
   deactivate OC
 else
-OF -->> PS: 해당하는 상품이 있는지 확인
+OF ->> PS: 해당하는 상품이 있는지 확인
   activate PS
 end
 
 alt 상품이 존재하지 않는 경우
-PS -->> OF: 404 NotFound Exception
+
+PS ->> OF: 404 NotFound Exception
 else
-PS -->> OF: 상품 정보 리턴
+PS ->> OF: 상품 정보 리턴
   deactivate PS
 end
 
 deactivate OF
 OS -->> OS: 상태값: 주문중 변경  
 
-OF -->> PS: 상품의 재고가 있는지 확인
-  activate OF
-  activate PS
-alt 재고가 존재하지 않는 경우 (재고가 0이하)
-  PS -->> OF: 409 Conflict
-else
-  PS -->> OF: 상품 재고 리턴
-deactivate PS
-deactivate OF
 OF -->> C: 주문 성공/실패 여부 반환
 
 %% 결제
 deactivate C  
-C -->> PAF: 결재 요청 (로그인 계정만)
+C ->> PAF: 결재 요청 (로그인 계정만)
 
 activate C
-
 activate PAF
+PAF -->> PG:외부 결제
+activate PAF
+activate PG
+Note over PAF, PG: CompletableFuture / 비동기 호출\nFallback/Timeout/CircuitBreaker 적용
+
+PG -->> PAF: 결제 응답 callback 
+deactivate PG
+alt 결제 응답이 실패로 리턴되어진 경우
+    PAF -->> POS: 포인트 확인
+    activate POS
+    alt 소지 포인트 보다 상품 가격이 높은 경우 
+    POS -->> PAF: 400 Bad Request
+    else
+    POS -->> PAF: 포인트 차감 (소지 포인트 - 상품가격)  
+    end
+else 결제 응답이 성공으로 이어진 경우
+    PAF -->> OS: 사용 포인트 확인
+    activate OS
+    alt 사용포인트 + cash보다 상품 가격이 높은 경우
+    PAF -->> C: 400 bad Request
+    end
+    POS -->> PAF: 해당 포인트 차감
 end
 
-PAF -->> POS: 포인트 확인
-activate POS
-
-alt 소지 포인트 보다 상품 가격이 높은 경우 
-POS -->> PAF: 400 Bad Request
-else
-POS -->> PAF: 포인트 차감 (소지 포인트 - 상품가격)    
-end
 deactivate POS
 deactivate PAF
 

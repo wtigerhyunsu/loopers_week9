@@ -4,10 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.loopers.application.order.command.OrderCreateCommand;
-import com.loopers.application.order.command.OrderItemCommands;
-import com.loopers.application.order.info.OrderCancelInfo;
-import com.loopers.application.order.info.OrderCreateInfo;
 import com.loopers.domain.order.OrderModel;
 import com.loopers.domain.point.PointModel;
 import com.loopers.domain.point.PointRepository;
@@ -60,8 +56,8 @@ class OrderServiceIntegrationTest {
 
     OrderCreateCommand command =
         new OrderCreateCommand("userId",
-            "서울시 송파구"
-            , orderItemModels, "메모..");
+            "서울시 송파구",
+            orderItemModels, "메모..");
     //when
     pointRepository.save(new PointModel("userId", BigInteger.valueOf(500000000)));
     OrderCreateInfo orderCreateInfo = orderFacade.create(command);
@@ -98,8 +94,8 @@ class OrderServiceIntegrationTest {
     String order = "userId"; //주문자
     OrderCreateCommand command =
         new OrderCreateCommand(order,
-            "서울시 송파구"
-            , orderItemModels, "메모..");
+            "서울시 송파구",
+            orderItemModels, "메모..");
     pointRepository.save(new PointModel("userId", BigInteger.valueOf(500000000)));
     OrderCreateInfo orderCreateInfo = orderFacade.create(command);
     //when
@@ -126,8 +122,8 @@ class OrderServiceIntegrationTest {
     String order = "userId"; //주문자
     OrderCreateCommand command =
         new OrderCreateCommand(order,
-            "서울시 송파구"
-            , orderItemModels, "메모..");
+            "서울시 송파구",
+            orderItemModels, "메모..");
     pointRepository.save(new PointModel("userId", BigInteger.valueOf(500000000)));
     OrderCreateInfo orderCreateInfo = orderFacade.create(command);
     //when

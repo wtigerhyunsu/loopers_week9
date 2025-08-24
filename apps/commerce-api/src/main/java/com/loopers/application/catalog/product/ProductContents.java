@@ -1,7 +1,6 @@
 package com.loopers.application.catalog.product;
 
 import java.math.BigInteger;
-import java.time.ZonedDateTime;
 
 public record ProductContents(
     String name,

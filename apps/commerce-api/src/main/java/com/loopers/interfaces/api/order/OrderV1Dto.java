@@ -1,11 +1,14 @@
 package com.loopers.interfaces.api.order;
 
+import com.loopers.application.order.OrderCreateCommand;
+import com.loopers.application.order.OrderCreateInfo;
+import com.loopers.application.order.OrderItemCommands;
 import java.math.BigInteger;
 import java.util.List;
 
 public class OrderV1Dto {
-  class Create {
-    record Response(
+  public class Create {
+    public record Response(
         String userId,
         Long orderId,
         String orderNumber,
@@ -13,39 +16,55 @@ public class OrderV1Dto {
         List<OrderItemResponse> items
     ) {
 
+      public Response(OrderCreateInfo orderCreateInfo) {
+        this(orderCreateInfo.userId(),
+            orderCreateInfo.orderId(),
+            orderCreateInfo.orderNumber(),
+            orderCreateInfo.totalPrice(),
+            orderCreateInfo.items().stream().map(o -> new OrderItemResponse(o.productId(), o.quantity(), o.unitPrice())).toList()
+        );
+      }
     }
 
 
-    record Request(
-        List<OrderItemRequest> items
+    public record Request(
+        String address,
+        List<OrderItemRequest> items,
+        String memo
     ) {
+      public OrderCreateCommand toCommand(String userId) {
+        return new OrderCreateCommand(userId,
+            address,
+            items.stream().map(o -> new OrderItemCommands(o.productId, o.quantity)).toList(),
+            memo);
+      }
     }
 
     record OrderItemRequest(
-        Long productId, Integer quantity
+        Long productId, Long quantity
     ) {
     }
   }
 
-  class Search {
-    record Response(List<Contents> contents, int page,
+  public class Search {
+    public record Response(List<Contents> contents, int page,
                     int size,
                     int totalElements,
                     int totalPages) {
     }
 
-    record Contents(Long OrderId, String orderNumber) {
+    public record Contents(Long OrderId, String orderNumber) {
     }
 
   }
 
-  class Get {
-    record Response(Long orderId, String orderNumber, List<OrderItemResponse> items) {
+  public class Get {
+    public record Response(Long orderId, String orderNumber, List<OrderItemResponse> items) {
     }
   }
 
-  record OrderItemResponse(
-      Long productId, String productName, Integer quantity
+  public record OrderItemResponse(
+      Long productId, Long quantity, BigInteger unitPrice
   ) {
   }
 }

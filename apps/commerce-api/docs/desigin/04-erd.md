@@ -88,7 +88,9 @@ ORDER {
  VARCHAR(10) status "주문상태 : 주문 / 주문 취소 / 결제"
  
  BIGINT total_price "주문 가격"    
-        
+ 
+ BIGINT use_point "사용할 포인트"
+ 
  VARCHAR(200) address "주문지 주소"
  TEXT memo "주문시 요청사항(메모)"
 
@@ -115,6 +117,7 @@ ORDER_ITEM {
 ORDER_HISTORY {
  BIGINT id PK "히스토리 아이디"
  BIGINT order_id FK "주문 아이디"
+ BIGINT use_point "사용할 포인트"
  VARCHAR(25) order_number "주문 번호"
  VARCHAR(20) member_id FK "계정아이디"
  VARCHAR(10) status "주문상태 : 주문 / 주문 취소 / 결제"
@@ -135,10 +138,26 @@ PAYMENT {
  VARCHAR(20) member_id FK "계정아이디"
  TEXT description "설명"
  BIGINT payment_amount "결제 금액"
- BIGINT order_amount "결제 금액"
+ BIGINT order_amount "주문 금액"
+ VARCHAR(20) PAYMENT_STAUS "결제 상태"
  TimeStamp created_at "생성 시간"
  TimeStamp updated_at "수정 시간"
  TimeStamp deleted_at "삭제 시간"    
+}
+
+%% 결제 내역
+PAYMENT_HISTORY {
+ BIGINT id PK "결제 히스토리 아이디"   
+ BIGINT id FK "결제 아이디"
+ VARCHAR(25) order_number "주문 번호"
+ VARCHAR(20) member_id "계정아이디"
+ TEXT description "설명"
+ BIGINT payment_amount "결제 금액"
+ BIGINT order_amount "주문 금액"
+ VARCHAR(20) PAYMENT_STAUS "결제 상태"
+ TimeStamp created_at "생성 시간"
+ TimeStamp updated_at "수정 시간"
+ TimeStamp deleted_at "삭제 시간"
 }
 
 BRAND ||--o{PRODUCT : has
@@ -161,4 +180,5 @@ MEMBER || --o{ ORDER_HISTORY : reference
 
 MEMBER || --o{PAYMENT : has 
 
+PAYMENT || --o{ PAYMENT_HISTORY : reference
 ```

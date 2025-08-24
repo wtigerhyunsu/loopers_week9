@@ -29,6 +29,69 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+resilience4j:
+  circuitbreaker:
+    instances:
+    # 'pg-payment' 라는 이름의 서킷 브레이커 설정
+      pg-payment:
+        registerHealthIndicator: true
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 3s
+        permitted-number-of-calls-in-half-open-state: 3
+        slow-call-duration-threshold: 3s
+        slow-call-rate-threshold: 50
+        sliding-window-type: time_based
+        minimum-number-of-calls: 5 # [핵심 원인] 실패율 계산을 위한 최소 호출 횟수. 이 설정이 누락되어 있었습니다.
+        record-exceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - feign.RetryableException
+        ignore-exceptions:
+          - com.loopers.support.error.CoreException
+      get-payment:
+        sliding-window-size: 20
+        failure-rate-threshold: 30
+        wait-duration-in-open-state: 1s
+        permitted-number-of-calls-in-half-open-state: 5
+        slow-call-duration-threshold: 1s
+        slow-call-rate-threshold: 20
+        sliding-window-type: time_based
+        minimum-number-of-calls: 10
+        # Throwable 대신 명확한 예외를 지정하여 의도치 않은 서킷 오픈을 방지합니다.
+        record-exceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - feign.RetryableException
+        ignore-exceptions:
+          - com.loopers.support.error.CoreException
+  retry:
+    instances:
+      pg-payment:
+        max-attempts: 3
+        wait-duration: 1s
+        exponential-backoff-multiplier: 2
+        # 재시도해도 소용없는 RuntimeException, IllegalArgumentException은 제외합니다.
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+          - feign.RetryableException
+      get-payment:
+        max-attempts: 1
+        wait-duration: 500ms
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+          - feign.RetryableException
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus, circuitbreaker
+
+  metrics:
+    enable:
+      all: true
+
 ---
 spring:
   config:

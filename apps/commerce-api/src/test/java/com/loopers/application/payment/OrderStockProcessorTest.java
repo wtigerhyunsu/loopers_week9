@@ -2,7 +2,6 @@ package com.loopers.application.payment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.loopers.application.payment.processor.StockProcessor;
 import com.loopers.domain.catalog.product.stock.StockModel;
 import com.loopers.domain.catalog.product.stock.StockRepository;
 import com.loopers.infrastructure.catalog.product.ProductJpaRepository;

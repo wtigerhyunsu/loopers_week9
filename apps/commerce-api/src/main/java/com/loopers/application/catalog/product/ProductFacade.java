@@ -1,6 +1,5 @@
 package com.loopers.application.catalog.product;
 
-import com.loopers.application.catalog.product.warmup.ProductWarmupProcessor;
 import com.loopers.domain.catalog.product.ProductProjection;
 import com.loopers.domain.catalog.product.ProductRepository;
 import java.util.List;

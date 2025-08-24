@@ -140,6 +140,7 @@ class Order {
  - String address
  - OrderStatus status
  - OrderItems orderItems
+ - BigInteger usePonit
  - User user
  - String memo
  - TotalPrice totalPrice
@@ -189,6 +190,7 @@ class OrderHistory {
   - String orderNumber
   - String address
   - OrderStatus status
+  - BigInt usePoint
   - List<OrderItem> orderItem
   - BigInteger totalPrice
   - String userId
@@ -225,6 +227,7 @@ class Payment {
   - User user
   - String orderNumber
   - BigInteger orderAmount
+  - PaymentStatus status
   - PaymentAmount paymentAmout
   - String description
   - LocalDateTime createdAt
@@ -232,12 +235,33 @@ class Payment {
   - LocalDateTime deletedAt
 }
 
+class PaymentStatus {
+ <<ENUMERATION>>
+ PENDING, FAIL, SUCCESS
+}
+
+%% 결제 내역
+class PaymentHistory {
+ - Long id
+ - Long paymentId
+ - String userId
+ - String orderNumber
+ - BigInteger orderAmount
+ - PaymentAmount paymentAmout
+ - String description
+ - LocalDateTime createdAt
+ - LocalDateTime updatedAt
+ - LocalDateTime deletedAt 
+}
+
 class PaymentAmount {
    <<Embedded>>
    - BigInteger amount
 }
 
-Payment --> PaymentAmount :Vo
+Payment --> PaymentAmount : Vo
+Payment --> PaymentStatus : enum
+Payment --> PaymentHistory : has 
 %% 포인트
 class Point { 
   - Long id

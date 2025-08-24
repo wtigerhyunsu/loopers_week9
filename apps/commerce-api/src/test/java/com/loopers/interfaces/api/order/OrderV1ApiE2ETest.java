@@ -5,13 +5,19 @@ import static com.loopers.interfaces.api.ApiResponse.Metadata.Result.SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.loopers.domain.catalog.brand.BrandModel;
+import com.loopers.domain.catalog.product.ProductModel;
+import com.loopers.infrastructure.catalog.brand.BrandJpaRepository;
+import com.loopers.infrastructure.catalog.product.ProductJpaRepository;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.interfaces.api.order.OrderV1Dto.Create.OrderItemRequest;
 import com.loopers.interfaces.api.order.OrderV1Dto.Create.Request;
 import com.loopers.utils.DatabaseCleanUp;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,10 +36,23 @@ class OrderV1ApiE2ETest {
   private final TestRestTemplate testRestTemplate;
   private final DatabaseCleanUp databaseCleanUp;
 
+
+  private final ProductJpaRepository productJpaRepository;
+  private final BrandJpaRepository brandJpaRepository;
+
   @Autowired
-  public OrderV1ApiE2ETest(TestRestTemplate testRestTemplate, DatabaseCleanUp databaseCleanUp) {
+  public OrderV1ApiE2ETest(TestRestTemplate testRestTemplate, BrandJpaRepository brandJpaRepository, ProductJpaRepository productJpaRepository, DatabaseCleanUp databaseCleanUp) {
     this.testRestTemplate = testRestTemplate;
+    this.brandJpaRepository = brandJpaRepository;
+    this.productJpaRepository = productJpaRepository;
     this.databaseCleanUp = databaseCleanUp;
+  }
+
+  @BeforeEach
+  void setUp() {
+    BrandModel brandModel = brandJpaRepository.save(new BrandModel("userId", "브랜드1"));
+    productJpaRepository.save(new ProductModel(brandModel.getId(),"상품1", BigInteger.valueOf(200),"zzz"));
+    productJpaRepository.save(new ProductModel(brandModel.getId(),"상품2", BigInteger.valueOf(200),"zzz"));
   }
 
   @AfterEach
@@ -73,13 +92,16 @@ class OrderV1ApiE2ETest {
       headers.add("X-USER-ID", userId);
 
       Long productId1 = 1L;
-      int quantity1 = 2;
+      Long quantity1 = 2L;
 
-      Long productId2 = 1L;
-      int quantity2 = 2;
+      Long productId2 = 2L;
+      Long quantity2 = 2L;
 
       Request request = new Request(
-          List.of(new OrderItemRequest(productId1, quantity1), new OrderItemRequest(productId2, quantity2))
+          "aaa",
+          List.of(new OrderItemRequest(productId1, quantity1),
+              new OrderItemRequest(productId2, quantity2)),
+          "aaaa"
       );
 
       //when

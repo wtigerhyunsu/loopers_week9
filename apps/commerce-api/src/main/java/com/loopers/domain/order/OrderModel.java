@@ -43,6 +43,7 @@ public class OrderModel extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private OrderStatus status;
 
+
   @Column(columnDefinition = "TEXT")
   private String memo;
 
@@ -102,6 +103,12 @@ public class OrderModel extends BaseEntity {
 
   public void forceChange(String state) {
     this.status = OrderStatus.valueOf(state);
+  }
+
+  public void paymentCheck() {
+    if(status != OrderStatus.ORDER) {
+      throw new IllegalArgumentException("주문 상태가 아닌 결제는 불가합니다.");
+    }
   }
 }
 

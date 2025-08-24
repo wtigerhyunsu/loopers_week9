@@ -6,7 +6,6 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.util.NoSuchElementException;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

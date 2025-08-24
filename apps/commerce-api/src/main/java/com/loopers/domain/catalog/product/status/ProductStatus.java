@@ -30,7 +30,7 @@ public class ProductStatus extends BaseEntity {
   }
 
   public static ProductStatus register(Long productId) {
-    return new ProductStatus(productId, 1);
+    return new ProductStatus(productId, 0);
   }
 
   public static ProductStatus of(Long productId, int count) {

@@ -3,6 +3,7 @@ package com.loopers.application.catalog.product.warmup;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.loopers.application.catalog.product.ProductCommand;
+import com.loopers.application.catalog.product.ProductWarmupProcessor;
 import com.loopers.application.catalog.product.SortOption;
 import com.loopers.domain.catalog.product.ProductRepository;
 import com.loopers.domain.catalog.product.cache.ProductCacheRepository;
