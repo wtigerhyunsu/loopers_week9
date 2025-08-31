@@ -26,6 +26,7 @@ public interface ProductV1ApiSpec {
       description = "상품을 단일 조회합니다."
   )
   ApiResponse<ProductV1Dto.Get.Response> get(
+      @Schema(name = "로그인 계정") String userId,
       @Schema(name = "상품 ID", description = "상세 조회할 상품의 ID")
       Long productId);
 }

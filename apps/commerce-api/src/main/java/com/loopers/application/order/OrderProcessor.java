@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
@@ -64,5 +65,11 @@ public class OrderProcessor {
     OrderModel orderModel = orderRepository.ofOrderNumber(userId, orderNumber);
     orderModel.cancel();
     return orderModel;
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void confirm(String orderNumber) {
+    OrderModel orderModel = orderRepository.ofOrderNumber(orderNumber);
+    orderModel.done();
   }
 }

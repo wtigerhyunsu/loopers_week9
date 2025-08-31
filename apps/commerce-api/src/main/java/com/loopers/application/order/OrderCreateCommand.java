@@ -6,6 +6,7 @@ public record OrderCreateCommand(
     String userId,
     String address,
     List<OrderItemCommands> items,
+    Long couponId,
     String memo
 ) {
 }

@@ -13,6 +13,7 @@ public class OrderV1Dto {
         Long orderId,
         String orderNumber,
         BigInteger totalPrice,
+        BigInteger discountPrice,
         List<OrderItemResponse> items
     ) {
 
@@ -21,6 +22,7 @@ public class OrderV1Dto {
             orderCreateInfo.orderId(),
             orderCreateInfo.orderNumber(),
             orderCreateInfo.totalPrice(),
+            orderCreateInfo.discountPrice(),
             orderCreateInfo.items().stream().map(o -> new OrderItemResponse(o.productId(), o.quantity(), o.unitPrice())).toList()
         );
       }
@@ -30,12 +32,14 @@ public class OrderV1Dto {
     public record Request(
         String address,
         List<OrderItemRequest> items,
+        Long couponId,
         String memo
     ) {
       public OrderCreateCommand toCommand(String userId) {
         return new OrderCreateCommand(userId,
             address,
             items.stream().map(o -> new OrderItemCommands(o.productId, o.quantity)).toList(),
+            couponId,
             memo);
       }
     }
@@ -48,9 +52,9 @@ public class OrderV1Dto {
 
   public class Search {
     public record Response(List<Contents> contents, int page,
-                    int size,
-                    int totalElements,
-                    int totalPages) {
+                           int size,
+                           int totalElements,
+                           int totalPages) {
     }
 
     public record Contents(Long OrderId, String orderNumber) {

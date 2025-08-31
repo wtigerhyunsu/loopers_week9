@@ -1,17 +1,20 @@
 package com.loopers.application.like;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 
 import com.loopers.domain.catalog.brand.BrandModel;
 import com.loopers.domain.catalog.product.ProductModel;
 import com.loopers.domain.catalog.product.ProductRepository;
 import com.loopers.domain.catalog.product.status.ProductStatus;
-import com.loopers.domain.like.LikeRepository;
+import com.loopers.domain.like.LikeModel;
 import com.loopers.infrastructure.catalog.brand.BrandJpaRepository;
 import com.loopers.infrastructure.catalog.product.ProductJpaRepository;
 import com.loopers.infrastructure.catalog.product.status.ProductStatusJpaRepository;
+import com.loopers.infrastructure.like.LikeJpaRepository;
 import com.loopers.utils.DatabaseCleanUp;
 import java.math.BigInteger;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,6 +25,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 class LikeServiceIntegrationTest {
@@ -41,8 +45,10 @@ class LikeServiceIntegrationTest {
   private ProductStatusJpaRepository productStatusJpaRepository;
 
   @Autowired
-  private LikeRepository likeRepository;
+  private LikeJpaRepository likeRepository;
 
+  @MockitoBean
+  private LikeEventPublisher publisher;
 
   @Autowired
   private DatabaseCleanUp databaseCleanUp;
@@ -59,6 +65,40 @@ class LikeServiceIntegrationTest {
   void tearDown() {
     databaseCleanUp.truncateAllTables();
   }
+
+
+  @DisplayName("집계가 실패하여도, 좋아요 증가 클릭은 정상적으로 되어진다.")
+  @Test
+  void returnLikeIncreaseUpdate_whenFailedToAggregate() {
+    //given
+    String userId = "userId";
+    Long productId = 1L;
+    //when
+    likeFacade.like(userId, productId);
+
+    doThrow(new RuntimeException("강제 예외")).when(publisher).increase(userId, productId);
+    Optional<LikeModel> like = likeRepository.findByUserIdAndProductId(userId, productId);
+    //then
+    assertThat(like).isPresent();
+  }
+
+
+  @DisplayName("집계가 실패하여도, 좋아요 감소 클릭은 정상적으로 되어진다.")
+  @Test
+  void returnLikeDecreaseUpdate_whenFailedToAggregate() {
+    //given
+    String userId = "userId";
+    Long productId = 1L;
+    //when
+    likeFacade.like(userId, productId);
+    likeFacade.unlike(userId, productId);
+    doThrow(new RuntimeException("강제 예외")).when(publisher).decrease(userId, productId);
+    Optional<LikeModel> like = likeRepository.findByUserIdAndProductId(userId, productId);
+    //then
+    assertThat(like).isEmpty();
+  }
+
+
 
   @DisplayName("최초로 좋아요를 하는 경우, 좋아요 횟수는 1이 증가한다.")
   @Test

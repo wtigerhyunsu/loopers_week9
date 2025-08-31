@@ -12,6 +12,8 @@ import com.loopers.application.payment.PaymentCommand.PaymentMethod;
 import com.loopers.application.point.PointFacade;
 import com.loopers.domain.catalog.product.stock.StockModel;
 import com.loopers.domain.catalog.product.stock.StockRepository;
+import com.loopers.domain.order.OrderModel;
+import com.loopers.domain.order.OrderStatus;
 import com.loopers.domain.payment.PaymentModel;
 import com.loopers.domain.payment.PaymentRepository;
 import com.loopers.domain.point.PointModel;
@@ -19,6 +21,7 @@ import com.loopers.domain.point.PointRepository;
 import com.loopers.domain.user.UserModel;
 import com.loopers.domain.user.UserRepository;
 import com.loopers.infrastructure.catalog.product.stock.StockJpaRepository;
+import com.loopers.infrastructure.order.OrderJpaRepository;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.utils.DatabaseCleanUp;
 import java.math.BigInteger;
@@ -65,6 +68,9 @@ class PaymentServiceIntegrationTest {
   private StockRepository stockRepository;
 
   @Autowired
+  private OrderJpaRepository orderJpaRepository;
+
+  @Autowired
   private StockJpaRepository stockJpaRepository;
 
   @Autowired
@@ -84,7 +90,7 @@ class PaymentServiceIntegrationTest {
     OrderCreateCommand command =
         new OrderCreateCommand(userId,
             "서울시 송파구",
-            orderItemModels, "메모..");
+            orderItemModels, null, "메모..");
 
     pointRepository.save(new PointModel(userId, BigInteger.valueOf(50000000)));
 
@@ -105,6 +111,21 @@ class PaymentServiceIntegrationTest {
     databaseCleanUp.truncateAllTables();
   }
 
+  @DisplayName("결제 생성 성공 시, 주문이 완료 상태가 된다.")
+  @Test
+  void returnOrderDoneStatus_whenPaymentCreated() {
+    //given
+    String orderNumber = orderCreateInfo.orderNumber();
+    BigInteger totalPrice = BigInteger.valueOf(500);
+    PaymentMethod paymentMethod = PaymentMethod.POINT;
+    PaymentCommand command = new PaymentCommand(userId, orderNumber, paymentMethod.name(), totalPrice, "shot");
+    //when
+    PaymentInfo payment = paymentFacade.payment(command);
+    OrderModel beforeOrderModel = orderJpaRepository.findByOrderNumber(orderNumber).get();
+    //then
+    assertThat(beforeOrderModel.getStatus()).isEqualTo(OrderStatus.DONE);
+  }
+
   @DisplayName("결제 생성 시, 포인트가 차감이 되어진다.")
   @Test
   void returnDecreasePoint_whenPaymentCreated() {
@@ -122,6 +143,7 @@ class PaymentServiceIntegrationTest {
         afterPoint.getPoint().subtract(totalPrice));
     System.out.println(payment);
   }
+
 
   @DisplayName("결재 생성 시, 재고가 차감이 되어진다.")
   @Test

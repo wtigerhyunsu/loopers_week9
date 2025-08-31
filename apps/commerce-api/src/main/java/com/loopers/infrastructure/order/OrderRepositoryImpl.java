@@ -31,4 +31,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     );
   }
 
+  @Override
+  public void clearDiscount(Long orderId) {
+    repository.clearDiscount(orderId);
+  }
+
+
 }

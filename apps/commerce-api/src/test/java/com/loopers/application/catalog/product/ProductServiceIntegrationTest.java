@@ -161,7 +161,6 @@ class ProductServiceIntegrationTest {
     }
 
 
-
     @DisplayName("가격을 기준으로 조회하는 경우, 해당하는 상품 리스트가 조회됩니다.(오름차순)")
     @Test
     void returnProductList_whenSortingPriceAsc() {
@@ -218,7 +217,7 @@ class ProductServiceIntegrationTest {
         //given
         Long productId = null;
         //when
-        CoreException result = assertThrows(CoreException.class, () -> productFacade.get(productId));
+        CoreException result = assertThrows(CoreException.class, () -> productFacade.get(null, productId));
         //then
         AssertionsForInterfaceTypes.assertThat(result.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
       }
@@ -232,7 +231,7 @@ class ProductServiceIntegrationTest {
         int count = 0;
         ProductProjection productModel = repository.get(productId);
         //when
-        ProductGetInfo productGetInfo = productFacade.get(productId);
+        ProductGetInfo productGetInfo = productFacade.get(null, productId);
         //then
         assertThat(productGetInfo.productId()).isEqualTo(productId);
         assertThat(productGetInfo.productName()).isEqualTo(productModel.getName());

@@ -10,9 +10,9 @@ import lombok.Builder;
 
 public class ProductV1Dto {
 
-  static class Search {
+  public static class Search {
     @Builder
-    record Response(List<Contents> contents,
+    public record Response(List<Contents> contents,
                     int page,
                     int size,
                     long totalElements,
@@ -43,8 +43,8 @@ public class ProductV1Dto {
   }
 
 
-  static class Get {
-    record Response(Long productId,
+  public static class Get {
+    public record Response(Long productId,
                     String brandName,
                     String productName,
                     BigInteger price,

@@ -6,4 +6,6 @@ public interface OrderRepository {
   OrderModel ofOrderNumber(String orderNumber);
 
   OrderModel ofOrderNumber(String userId, String orderNumber);
+
+  void clearDiscount(Long orderId);
 }

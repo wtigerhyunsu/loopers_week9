@@ -15,6 +15,7 @@ public record OrderCreateInfo(
     String address,
     List<ItemInfos> items,
     BigInteger totalPrice,
+    BigInteger discountPrice,
     String memo,
     ZonedDateTime createdAt,
     ZonedDateTime updatedAt
@@ -28,6 +29,7 @@ public record OrderCreateInfo(
         .orderStatus(orderModel.getStatus().name())
         .address(orderModel.getAddress())
         .totalPrice(orderModel.getTotalPrice())
+        .discountPrice(orderModel.getDiscountPrice())
         .memo(orderModel.getMemo())
         .createdAt(orderModel.getCreatedAt())
         .updatedAt(orderModel.getUpdatedAt())

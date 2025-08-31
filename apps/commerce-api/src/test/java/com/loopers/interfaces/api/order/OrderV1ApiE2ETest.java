@@ -51,8 +51,8 @@ class OrderV1ApiE2ETest {
   @BeforeEach
   void setUp() {
     BrandModel brandModel = brandJpaRepository.save(new BrandModel("userId", "브랜드1"));
-    productJpaRepository.save(new ProductModel(brandModel.getId(),"상품1", BigInteger.valueOf(200),"zzz"));
-    productJpaRepository.save(new ProductModel(brandModel.getId(),"상품2", BigInteger.valueOf(200),"zzz"));
+    productJpaRepository.save(new ProductModel(brandModel.getId(), "상품1", BigInteger.valueOf(200), "zzz"));
+    productJpaRepository.save(new ProductModel(brandModel.getId(), "상품2", BigInteger.valueOf(200), "zzz"));
   }
 
   @AfterEach
@@ -101,7 +101,7 @@ class OrderV1ApiE2ETest {
           "aaa",
           List.of(new OrderItemRequest(productId1, quantity1),
               new OrderItemRequest(productId2, quantity2)),
-          "aaaa"
+          null, "aaaa"
       );
 
       //when

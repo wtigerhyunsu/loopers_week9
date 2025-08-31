@@ -2,6 +2,8 @@ package com.loopers.application.catalog.product;
 
 import com.loopers.domain.catalog.product.ProductProjection;
 import com.loopers.domain.catalog.product.ProductRepository;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class ProductFacade {
   private final ProductRepository productRepository;
   private final ProductWarmupProcessor warmupProcessor;
+  private final ProductPublisher publisher;
 
   /*
   latest, price_asc, likes_desc
@@ -39,17 +42,25 @@ public class ProductFacade {
 
 
   // 상세 조회
-  public ProductGetInfo get(Long id) {
-    ProductProjection productProjection = productRepository.get(id);
+  public ProductGetInfo get(String userId, Long id) {
+    try {
+      ProductProjection productProjection = productRepository.get(id);
+      publisher.send(userId, userId + "가 productId : " + id + "를 조회 했습니다.");
+      return ProductGetInfo.builder()
+          .productId(productProjection.getId())
+          .productName(productProjection.getName())
+          .brandName(productProjection.getBrandName())
+          .price(productProjection.getPrice())
+          .description(productProjection.getDescription())
+          .likedCount(productProjection.getLikedCount())
+          .build();
+    }catch (CoreException e) {
+      throw e;
+    } catch (Exception e) {
+      publisher.fail(userId, e.getMessage());
+      throw new CoreException(ErrorType.INTERNAL_ERROR, e.getMessage());
+    }
 
-    return ProductGetInfo.builder()
-        .productId(productProjection.getId())
-        .productName(productProjection.getName())
-        .brandName(productProjection.getBrandName())
-        .price(productProjection.getPrice())
-        .description(productProjection.getDescription())
-        .likedCount(productProjection.getLikedCount())
-        .build();
   }
 
   public void rank() {

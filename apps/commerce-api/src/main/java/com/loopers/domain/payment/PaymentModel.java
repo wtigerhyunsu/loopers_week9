@@ -13,11 +13,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "payment")
 @Getter
+@ToString
 public class PaymentModel extends BaseEntity {
 
   @Column(nullable = false, length = 25)

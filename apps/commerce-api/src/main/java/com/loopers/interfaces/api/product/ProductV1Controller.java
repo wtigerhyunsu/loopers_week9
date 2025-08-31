@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,13 +40,15 @@ public class ProductV1Controller implements ProductV1ApiSpec {
     );
   }
 
-  @Override
   @GetMapping("/{productId}")
-  public ApiResponse<ProductV1Dto.Get.Response> get(@PathVariable Long productId) {
-    return ApiResponse.success(ProductV1Dto.Get.Response.from(productFacade.get(productId)));
+  @Override
+  public ApiResponse<ProductV1Dto.Get.Response> get(
+      @RequestHeader(value = "X-USER-ID", required = false) String userId,
+      @PathVariable Long productId) {
+    return ApiResponse.success(ProductV1Dto.Get.Response.from(productFacade.get(userId, productId)));
   }
 
-  @PostMapping ("/rank")
+  @PostMapping("/rank")
   public ApiResponse<?> rank() {
     productFacade.rank();
     return ApiResponse.success();

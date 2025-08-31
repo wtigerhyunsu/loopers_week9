@@ -1,10 +1,10 @@
 package com.loopers.application.payment;
 
 import com.loopers.domain.order.OrderModel;
-import com.loopers.domain.order.OrderRepository;
 import com.loopers.domain.payment.PaymentMethod;
 import com.loopers.domain.payment.PaymentModel;
 import com.loopers.domain.payment.TransactionStatusResponse;
+import com.loopers.infrastructure.payment.PaymentOrderProcessor;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component;
 public class PaymentCardStrategy implements PaymentStrategy {
   private final PaymentGatewayPort paymentGatewayPort;
   private final PaymentProcessor paymentProcessor;
-  private final OrderRepository orderRepository;
+  private final PaymentOrderProcessor orderProcessor;
 
   private final PaymentHistoryProcessor paymentHistoryProcessor;
 
   @Override
-  public PaymentModel process(PaymentCommand command, OrderModel orderModel) {
-
+  public PaymentModel process(PaymentCommand command) {
+    OrderModel orderModel = orderProcessor.get(command.orderNumber());
     // PG사 요청
     PaymentResponse response = paymentGatewayPort.send(PaymentGatewayCommand.of(command));
 

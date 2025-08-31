@@ -1,10 +1,9 @@
 package com.loopers.application.payment;
 
 import com.loopers.domain.order.OrderModel;
-import com.loopers.domain.order.OrderRepository;
-import com.loopers.domain.order.orderItem.OrderItemModel;
 import com.loopers.domain.payment.PaymentMethod;
 import com.loopers.domain.payment.PaymentModel;
+import com.loopers.infrastructure.payment.PaymentOrderProcessor;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,21 +11,19 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class PaymentPointStrategy implements PaymentStrategy {
-  private final PointUseHandler pointUseHandler;
   private final PaymentProcessor paymentProcessor;
-  private final StockProcessor stockProcessor;
-  private final OrderRepository orderRepository;
-
+  private final PaymentOrderProcessor processor;
+  private final PaymentPublisher publisher;
   private final PaymentHistoryProcessor paymentHistoryProcessor;
 
 
   @Override
   @Transactional
-  public PaymentModel process(PaymentCommand command, OrderModel orderModel) {
+  public PaymentModel process(PaymentCommand command) {
+    OrderModel orderModel = processor.get(command.orderNumber());
 
     // 포인트 감소
-    pointUseHandler.use(command.userId(), command.payment());
-
+    publisher.publish(command.userId(), command.payment());
     // 결제 처리
     PaymentModel payment = paymentProcessor.create(new PaymentProcessorVo(
         command.userId(), command.orderNumber(), command.description(),
@@ -37,14 +34,10 @@ public class PaymentPointStrategy implements PaymentStrategy {
     ));
 
     // 재고 차감
-    for (OrderItemModel orderItem : orderModel.getOrderItems()) {
-      Long productId = orderItem.getProductId();
-      Long quantity = orderItem.getQuantity();
-      stockProcessor.decreaseStock(productId, quantity);
-    }
+    publisher.publish(orderModel.getOrderItems());
 
-    orderModel.done();
     payment.done();
+    publisher.publish(command.orderNumber());
 
     paymentHistoryProcessor.add(payment, "결제가 완료되었습니다.");
 
