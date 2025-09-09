@@ -1,4 +1,4 @@
-package com.loopers.data_platform;
+package com.loopers.data_platform.application;
 
 import java.time.ZonedDateTime;
 

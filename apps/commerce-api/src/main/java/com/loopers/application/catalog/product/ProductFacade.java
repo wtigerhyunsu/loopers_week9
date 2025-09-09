@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 public class ProductFacade {
   private final ProductRepository productRepository;
   private final ProductWarmupProcessor warmupProcessor;
-  private final ProductPublisher publisher;
+  private final ProductEventPublisher publisher;
+  private final ProductPublisher productPublisher;
 
   /*
   latest, price_asc, likes_desc
@@ -46,6 +47,7 @@ public class ProductFacade {
     try {
       ProductProjection productProjection = productRepository.get(id);
       publisher.send(userId, userId + "가 productId : " + id + "를 조회 했습니다.");
+      productPublisher.aggregate(id);
       return ProductGetInfo.builder()
           .productId(productProjection.getId())
           .productName(productProjection.getName())
@@ -54,7 +56,7 @@ public class ProductFacade {
           .description(productProjection.getDescription())
           .likedCount(productProjection.getLikedCount())
           .build();
-    }catch (CoreException e) {
+    } catch (CoreException e) {
       throw e;
     } catch (Exception e) {
       publisher.fail(userId, e.getMessage());

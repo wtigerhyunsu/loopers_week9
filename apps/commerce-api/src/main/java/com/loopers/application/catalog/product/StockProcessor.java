@@ -1,6 +1,7 @@
 package com.loopers.application.catalog.product;
 
 import com.loopers.domain.catalog.product.stock.StockModel;
+import com.loopers.domain.catalog.product.stock.StockPublisher;
 import com.loopers.domain.catalog.product.stock.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,11 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StockProcessor {
   private final StockRepository stockRepository;
-
+  private final StockEventPublisher eventPublisher;
+  private final StockPublisher stockPublisher;
 
   @Transactional
   public void decreaseStock(Long productId, Long quantity) {
     StockModel stockModel = stockRepository.get(productId);
+    eventPublisher.decrease(productId, quantity, stockModel.stock());
     stockModel.decrease(quantity);
+
+    if (stockModel.stock() == 0L) {
+      stockPublisher.evict(productId);
+    }
   }
 }

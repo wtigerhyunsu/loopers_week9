@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeFacade {
   private final ProductRepository productRepository;
   private final LikeRepository likeRepository;
+  private final LikeCacheRepository cacheRepository;
   private final LikeEventPublisher publisher;
 
   @Transactional
@@ -33,8 +34,8 @@ public class LikeFacade {
 
       //좋아요
       likeRepository.like(userId, productId);
-
       // 좋아요 증가
+      cacheRepository.increase(productId);
       publisher.increase(userId, productId);
       publisher.send(userId, "INCREASE", userId + "가 productId : " + productId + "에 좋아요를 눌렀습니다.");
     } catch (Exception e) {
@@ -60,7 +61,8 @@ public class LikeFacade {
       likeRepository.unlike(userId, productId);
 
       // 좋아요 감소
-      publisher.decrease(userId, productId);
+      cacheRepository.decrement(productId);
+      publisher.decrease(userId, productId, productStatus.getLikeCount() - 1);
       publisher.send(userId, "DECREASE", userId + "가 productId : " + productId + "에 좋아요를 해제했습니다.");
     } catch (Exception e) {
       publisher.fail(userId, "DECREASE", e.getMessage());

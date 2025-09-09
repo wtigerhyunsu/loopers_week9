@@ -92,12 +92,11 @@ class LikeServiceIntegrationTest {
     //when
     likeFacade.like(userId, productId);
     likeFacade.unlike(userId, productId);
-    doThrow(new RuntimeException("강제 예외")).when(publisher).decrease(userId, productId);
+    doThrow(new RuntimeException("강제 예외")).when(publisher).decrease(userId, productId, 100);
     Optional<LikeModel> like = likeRepository.findByUserIdAndProductId(userId, productId);
     //then
     assertThat(like).isEmpty();
   }
-
 
 
   @DisplayName("최초로 좋아요를 하는 경우, 좋아요 횟수는 1이 증가한다.")

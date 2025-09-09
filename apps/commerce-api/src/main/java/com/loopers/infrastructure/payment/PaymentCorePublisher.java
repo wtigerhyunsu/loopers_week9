@@ -1,8 +1,8 @@
 package com.loopers.infrastructure.payment;
 
 import com.loopers.application.payment.PaymentPublisher;
-import com.loopers.data_platform.PlatformSendEvent;
-import com.loopers.data_platform.UserTrackingData;
+import com.loopers.data_platform.application.PlatformSendEvent;
+import com.loopers.data_platform.application.UserTrackingData;
 import com.loopers.domain.catalog.product.stock.StockDecreaseCommand;
 import com.loopers.domain.order.orderItem.OrderItemModel;
 import com.loopers.domain.payment.PaymentOrderConfirmCommand;

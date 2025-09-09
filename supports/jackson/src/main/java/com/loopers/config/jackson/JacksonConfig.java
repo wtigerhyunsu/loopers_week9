@@ -35,13 +35,13 @@ class JacksonConfig {
             builder.featuresToEnable(
                 DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
                 DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY,
-                DeserializationFeature.READ_ENUMS_USING_TO_STRING,
-                DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES
+                DeserializationFeature.READ_ENUMS_USING_TO_STRING
             );
             builder.featuresToDisable(
                 DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL,
                 DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,
-                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
+                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES
             );
         };
     }

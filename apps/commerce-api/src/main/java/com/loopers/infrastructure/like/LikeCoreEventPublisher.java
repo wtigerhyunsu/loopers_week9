@@ -1,7 +1,7 @@
 package com.loopers.infrastructure.like;
 
 import com.loopers.application.like.LikeEventPublisher;
-import com.loopers.data_platform.UserTrackingData;
+import com.loopers.data_platform.application.UserTrackingData;
 import com.loopers.domain.like.LikeDecreaseEvent;
 import com.loopers.domain.like.LikeIncreaseEvent;
 import java.time.ZonedDateTime;
@@ -21,9 +21,9 @@ public class LikeCoreEventPublisher implements LikeEventPublisher {
     publisher.publishEvent(new LikeIncreaseEvent(userId, productId));
   }
 
-  public void decrease(String userId, Long productId) {
+  public void decrease(String userId, Long productId, int current) {
     log.info("userId : {}가 productId :{}에 좋아요를 감소시켰습니다.", userId, productId);
-    publisher.publishEvent(new LikeDecreaseEvent(userId, productId));
+    publisher.publishEvent(new LikeDecreaseEvent(userId, productId, current));
   }
 
 

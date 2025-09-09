@@ -1,7 +1,7 @@
 package com.loopers.infrastructure.order;
 
-import com.loopers.data_platform.PlatformSendEvent;
-import com.loopers.data_platform.UserTrackingData;
+import com.loopers.data_platform.application.PlatformSendEvent;
+import com.loopers.data_platform.application.UserTrackingData;
 import com.loopers.domain.order.OrderCouponRegisterCommand;
 import com.loopers.domain.order.OrderPublisher;
 import java.time.ZonedDateTime;
