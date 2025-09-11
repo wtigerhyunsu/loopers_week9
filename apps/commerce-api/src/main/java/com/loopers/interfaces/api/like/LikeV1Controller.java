@@ -1,6 +1,7 @@
 package com.loopers.interfaces.api.like;
 
 import com.loopers.application.like.LikeFacade;
+import com.loopers.application.popularity.PopularityService;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.interfaces.api.like.LikeV1Dto.Get;
 import com.loopers.interfaces.api.like.LikeV1Dto.Get.Contents;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LikeV1Controller implements LikeV1ApiSpec {
   private final LikeFacade likeFacade;
+  private final PopularityService popularityService;
 
   @Override
   @PostMapping("/{productId}")
@@ -28,6 +30,7 @@ public class LikeV1Controller implements LikeV1ApiSpec {
       @RequestHeader("X-User-Id") String userId,
       @PathVariable Long productId) {
     likeFacade.like(userId, productId);
+    popularityService.incrementLike(productId);
     return ApiResponse.success(Response.from(userId, productId));
   }
 
@@ -37,6 +40,7 @@ public class LikeV1Controller implements LikeV1ApiSpec {
       @RequestHeader("X-User-Id") String userId,
       @PathVariable Long productId) {
     likeFacade.unlike(userId, productId);
+    popularityService.decrementLike(productId);
     return ApiResponse.success(Unregister.Response.from(userId, productId));
   }
 

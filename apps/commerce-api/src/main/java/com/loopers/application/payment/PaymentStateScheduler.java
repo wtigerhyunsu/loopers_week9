@@ -32,10 +32,11 @@ public class PaymentStateScheduler {
   public void runTaskWithCron() {
     log.info("Cron 스케쥴 작업 실행: {}", LocalDateTime.now());
 
-    ZonedDateTime plusMinutes = ZonedDateTime.now().plusMinutes(5);
+    ZonedDateTime cutoffTime = ZonedDateTime.now().minusMinutes(5);
 
     List<PaymentModel> allPayments = paymentRepository.findPendingOlderThan(
-        PaymentStatus.PENDING, plusMinutes
+        PaymentStatus.PENDING,
+        cutoffTime
     );
 
     if (allPayments.isEmpty()) {
@@ -43,30 +44,34 @@ public class PaymentStateScheduler {
       return;
     }
 
-    Map<String, List<PaymentModel>> paymentsByOrderNumber = allPayments.stream()
+    Map<String, List<PaymentModel>> paymentsByOrderNumber = allPayments
+        .stream()
         .collect(Collectors.groupingBy(PaymentModel::getOrderNumber));
 
     for (Entry<String, List<PaymentModel>> entry : paymentsByOrderNumber.entrySet()) {
       String orderId = entry.getKey();
+
       OrderResponse orderResponse = paymentGatewayPortImpl.get(orderId);
       List<TransactionResponse> transactions = orderResponse.transactions();
       List<PaymentModel> paymentModels = entry.getValue();
+
       for (PaymentModel paymentModel : paymentModels) {
-        TransactionResponse transactionResponse = transactions.stream()
+        TransactionResponse transactionResponse = transactions
+            .stream()
             .filter(payment -> paymentModel.getTransactionId().equals(payment.transactionKey()))
-            .findFirst().orElse(null);
+            .findFirst()
+            .orElse(null);
+
         if (transactionResponse == null) {
           continue;
         }
+
         String status = transactionResponse.status().name();
         String reason = transactionResponse.reason();
+
         paymentModel.changeStatus(status);
-
         paymentHistoryProcessor.add(paymentModel, reason);
-
       }
-
-
     }
   }
 

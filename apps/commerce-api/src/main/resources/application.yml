@@ -30,6 +30,14 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+popularity:
+  key-ttl-hours: 24
+  weights:
+    like: 1
+    purchase:
+      qty: 1
+      amountPerKrw1000: 1
+
 resilience4j:
   circuitbreaker:
     instances:

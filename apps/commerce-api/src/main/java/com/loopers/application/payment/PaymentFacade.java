@@ -1,6 +1,6 @@
 package com.loopers.application.payment;
 
-
+import com.loopers.application.popularity.PopularityService;
 import com.loopers.domain.order.OrderModel;
 import com.loopers.domain.payment.PaymentMethod;
 import com.loopers.domain.payment.PaymentModel;
@@ -22,6 +22,7 @@ public class PaymentFacade {
 
   private final PaymentPublisher publisher;
   private final PaymentOrderProcessor processor;
+  private final PopularityService popularityService;
 
   public PaymentInfo payment(PaymentCommand command) {
     try {
@@ -65,5 +66,12 @@ public class PaymentFacade {
     publisher.publish(paymentModel.getOrderNumber());
     paymentHistoryProcessor.add(paymentModel, "결제가 완료되었습니다.");
     publisher.publish(paymentModel.getId(), paymentModel.toString());
+
+    // 인기 점수 증가
+    orderModel.getOrderItems().forEach(item -> {
+      long qty = item.getQuantity();
+      long amountWon = item.getUnitPrice().multiply(java.math.BigInteger.valueOf(qty)).longValue();
+      popularityService.incrementPurchase(item.getProductId(), qty, amountWon);
+    });
   }
 }
