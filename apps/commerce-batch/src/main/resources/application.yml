@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: commerce-batch
+  batch:
+    job:
+      enabled: false
+  config:
+    import:
+      - jpa.yml
+
+popularity:
+  scaling-factor: 1000.0
+  weights:
+    like:
+      value: 1
+    purchase:
+      qty: 1
+      amount-per-krw1000: 1
+    view:
+      value: 1
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local, test
+
