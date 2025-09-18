@@ -12,6 +12,8 @@ public class MetricsModel extends BaseEntity {
   private Long views;
   private Long likes;
   private Long sales;
+  // total sales amount (won) per day
+  private Long amount;
   private LocalDate date;
 
   protected MetricsModel() {
@@ -22,6 +24,16 @@ public class MetricsModel extends BaseEntity {
     this.views = views;
     this.likes = likes;
     this.sales = sales;
+    this.amount = 0L;
+    this.date = date;
+  }
+
+  public MetricsModel(Long productId, Long views, Long likes, Long sales, Long amount, LocalDate date) {
+    this.productId = productId;
+    this.views = views;
+    this.likes = likes;
+    this.sales = sales;
+    this.amount = amount == null ? 0L : amount;
     this.date = date;
   }
 
@@ -36,6 +48,10 @@ public class MetricsModel extends BaseEntity {
 
   public void updateSales(Long sales) {
     this.sales += sales;
+  }
+
+  public void updateAmount(Long amount) {
+    this.amount += amount;
   }
 
 
@@ -69,6 +85,14 @@ public class MetricsModel extends BaseEntity {
 
   public void setSales(Long sales) {
     this.sales = sales;
+  }
+
+  public Long getAmount() {
+    return amount;
+  }
+
+  public void setAmount(Long amount) {
+    this.amount = amount;
   }
 
   public LocalDate getDate() {

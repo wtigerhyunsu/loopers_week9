@@ -1,11 +1,9 @@
 package com.loopers.interfaces.api.popularity;
 
-import com.loopers.application.popularity.PopularityCommand;
 import com.loopers.application.popularity.PopularityService;
 import com.loopers.interfaces.api.ApiResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +19,7 @@ public class PopularityV1Controller {
   private final PopularityService popularityService;
 
   @GetMapping("/top")
-  public ApiResponse<List<PopularityCommand.Entry>> top(
+  public ApiResponse<PopularityResponse.TopRanking> top(
       @RequestParam(name = "limit", defaultValue = "10") int limit,
       @RequestParam(name = "date", required = false) String date
   ) {
@@ -31,7 +29,7 @@ public class PopularityV1Controller {
   }
 
   @GetMapping("/{productId}")
-  public ApiResponse<PopularityCommand.Rank> rank(
+  public ApiResponse<PopularityResponse.ProductRank> rank(
       @PathVariable("productId") long productId,
       @RequestParam(name = "date", required = false) String date
   ) {
