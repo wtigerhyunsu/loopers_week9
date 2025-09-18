@@ -7,11 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.loopers.application.popularity.PopularityService;
 import java.util.List;
+
+import com.loopers.application.ranking.RankingQueryService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,13 +44,5 @@ class PopularityV1ControllerTest {
   void rank_ok() throws Exception {
     mvc.perform(get("/api/v1/popularity/10"))
         .andExpect(status().isOk());
-  }
-}
-
-@TestConfiguration
-class MockConfig {
-  @Bean
-  PopularityService popularityService() {
-    return Mockito.mock(PopularityService.class);
   }
 }
