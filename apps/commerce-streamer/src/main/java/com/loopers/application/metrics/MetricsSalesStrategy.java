@@ -23,7 +23,8 @@ public class MetricsSalesStrategy implements MetricsStrategy {
   public void process(String message) {
     Message convertMessage = convert.convert(message, Message.class);
     SalesMetricsMessage result = convert.convert(convertMessage.getPayload(), SalesMetricsMessage.class);
-    repository.upsertSales(result.productId(), result.quantity());
+    repository.upsertSalesAndAmount(result.productId(), result.quantity(),
+        result.amountWon() == null ? 0L : result.amountWon());
     eventHandledRepository.save(convertMessage.getEventId());
   }
 

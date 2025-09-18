@@ -48,16 +48,24 @@ public class MetricsRepositoryImpl implements MetricsRepository {
 
   @Transactional
   public void upsertSales(Long productId, long value) {
+    upsertSalesAndAmount(productId, value, 0L);
+  }
+
+  @Transactional
+  public void upsertSalesAndAmount(Long productId, long quantity, long amountWon) {
     LocalDate now = LocalDate.now();
     Optional<MetricsModel> metricsModel = metricsJpaRepository.findByProductId(productId)
         .stream().filter(p -> p.getDate().equals(now)).findFirst();
     if (metricsModel.isEmpty()) {
-      metricsJpaRepository.save(new MetricsModel(productId, 0L, 0L, value, LocalDate.now()));
+      metricsJpaRepository.save(new MetricsModel(productId, 0L, 0L, quantity, amountWon, LocalDate.now()));
       return;
     }
 
     MetricsModel metrics = metricsModel.get();
-    metrics.updateSales(value);
+    metrics.updateSales(quantity);
+    if (amountWon > 0) {
+      metrics.updateAmount(amountWon);
+    }
 
   }
 

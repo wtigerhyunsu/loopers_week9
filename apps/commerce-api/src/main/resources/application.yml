@@ -32,11 +32,15 @@ springdoc:
 
 popularity:
   key-ttl-hours: 24
+  scaling-factor: 1000.0
   weights:
-    like: 1
+    like:
+      value: 1
     purchase:
       qty: 1
-      amountPerKrw1000: 1
+      amount-per-krw1000: 1
+    view:
+      value: 1
 
 resilience4j:
   circuitbreaker:

@@ -6,27 +6,30 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.loopers.application.popularity.PopularityService;
-import com.loopers.application.popularity.PopularityCommand;
 import java.util.List;
+
+import com.loopers.application.ranking.RankingQueryService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WebMvcTest(PopularityV1Controller.class)
+@Import(MockConfig.class)
 class PopularityV1ControllerTest {
 
   @Autowired
   MockMvc mvc;
 
-  @MockBean
+  @Autowired
   PopularityService popularityService;
 
   @Test
   void top_ok() throws Exception {
-    when(popularityService.topN(any(Integer.class), any())).thenReturn(List.of(new PopularityCommand.Entry(1L, 10)));
+    when(popularityService.topN(any(Integer.class), any()))
+        .thenReturn(new PopularityResponse.TopRanking(List.of()));
     mvc.perform(get("/api/v1/popularity/top").param("limit", "5"))
         .andExpect(status().isOk());
   }
